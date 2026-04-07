@@ -36,7 +36,6 @@ IN THE SOFTWARE.
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 
 #ifndef CIMG_H
 #define CIMG_H
@@ -68,17 +67,36 @@ void freePixelMemory(PixelData* pd) {
     free(pd->pixels);
 }
 
+void readFileHeader(char outputString[8],char* directory) {
+    FILE* pFile;
+    pFile=fopen(directory,"r");
+    fread(outputString,8,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
+}
+
+// checks first 8 bytes of the file to check if they match the 
+bool isCIMG(char* directory) {
+    FILE* pFile;
+    pFile=fopen(directory,"r");
+
+    char header[8];
+    fread(header,8,8,pFile); 
+    bool match=1;
+
+    for (uint8_t index=0; index<8; index++) { // compares the two because strcmp() doesn't want to do its allocated job
+        if (header[index]!=CIMGheader[index]) {
+            match=0;
+        }
+    }
+    
+    return match;
+}
+
 // gets CMIG file pixel data
 PixelData decodeCMIGfile(char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"r"); // read-only cos we won't modify anything
 
-    char rawData[MAXFILESIZE];
-    char trueData[MAXFILESIZE]; // this might look like im wasting memory but trust the process
-    while (fgets(rawData,MAXFILESIZE,pFile)) {
-        sprintf(trueData,"%s%s",trueData,rawData); // rawData gets cut off at 0x0D chars (or simply ENTER) so we use a while loop
-        
-    }
+
 }
 
 // encodes pixel data into a CMIG file

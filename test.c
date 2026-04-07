@@ -4,5 +4,5 @@
 //! THIS FILE ONLY EXISTS FOR DEMONSTRATIONAL PURPOSES
 
 int main(){
-
+    printf("%d",isCIMG("test.cimg"));
 }
