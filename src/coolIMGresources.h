@@ -40,26 +40,20 @@ IN THE SOFTWARE.
 #define CIMGR
 #endif
 
+#ifdef EVIL //! DONT
+#pragma GCC poison printf
+#endif
+
 typedef struct {
     char value[2];
 } charVector2;
 
-typedef struct {
-    char value[4];
-} charVector4;
-
-charVector2 int16ToChar2(uint16_t input) {
-    char tempHex[5]; // used for storing hex value of the input to convert it to char[2] later
-    // 4 chars is enough because 2 bits can be represented as 4 hex digits max but using 4 gives a warning for some reason
-    char inputChars[2]={0,0}; // yes
-    sprintf(tempHex,"%x",input);
-    for (uint8_t index=1; index<5; index++) {
-        if ((tempHex[index]-'0')<10) { // uhhh, dont really know how to explain this. ascii table ig? does that help?
-
-        } else {
-            printf("%c",tempHex[index]);
-        }
-    }
+// uses some dark c magic to convert uint16_t to charVector2
+charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
+    char char1=input; // trust the process
+    char char0=(input-char1)/16; // this MUST work
+    charVector2 vectorOut={char0,char1}; // this works somehow
+    return vectorOut;
 }
 
 //! the function below will give a segmentation fault if the path has no file

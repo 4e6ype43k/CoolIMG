@@ -53,21 +53,30 @@ header|size (wh order)|2 empty bytes|array of pixel colour data in human-readabl
 #define MAXFILESIZE MAXFILEPIXELS*32+96 //! DO NOT CHANGE THIS, PLEASE CHANGE THE ONE ABOVE
 #endif
 
-#ifdef EVIL //! DONT
-#pragma GCC poison printf
-#endif
-
 char CIMGheader[8]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+
+
+
+typedef struct {
+    uint8_t r; // red
+    uint8_t g; // green
+    uint8_t b; // blue
+    uint8_t a; // alpha
+} Color;
+
+Color int32ToColor(uint32_t colorInt) {
+    // TODO
+}
 
 typedef struct {
     uint16_t width;
     uint16_t height;
-    uint32_t* pixels; //? ARGB, not RGBA (same in the file)
+    Color* pixels; //? color is stored as RGBA in the file
 } PixelData;
 
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* pd) {
-    pd->pixels=(uint32_t*) malloc(pd->width*pd->height);
+    pd->pixels=(Color*) malloc(pd->width*pd->height*4); //? the 4 is the bytes required to store a Color struct
 }
 
 // frees memory after you're done with the pixel data
@@ -127,7 +136,15 @@ void encodePixelData(PixelData pd,char* directory) {
     pFile=fopen(directory,"w"); // if the file doesn't exist in the dir, it'll create itself (i think)
 
     char rawData[MAXFILESIZE/8]; // stores all the data in a 1D byte array
-    sprintf(rawData,"%s",CIMGheader);
-
+    sprintf("%s%s%s",CIMGheader,int16ToChar2(pd.width),int16ToChar2(pd.height)); // damn
     
+    for (uint32_t index=12; index<pd.height*pd.width+12; index+=4) { // oh boy
+        rawData[index]=pd.pixels[index].r; // "yeah bro, c is very readable"
+        rawData[index+1]=pd.pixels[index].g;
+        rawData[index+2]=pd.pixels[index].b;
+        rawData[index+3]=pd.pixels[index].a;
+    }
+
+    fprintf(pFile,"%s",rawData);
+    fclose(pFile); // hope this works
 }
