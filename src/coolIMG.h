@@ -45,38 +45,17 @@ header|size (wh order)|2 empty bytes|array of pixel colour data in human-readabl
 #define CIMG_H
 #endif
 
-#ifndef MAXFILEPIXELS // this is the thing you can change, NOT THE BOTTOM ONE
-#define MAXFILEPIXELS 16384 // this refers to the max product of file w and h that will be accepted by readCMIGfile()
-#endif // you can change this with #define MAXFILEPIXELS in your scripts
-
-#ifndef MAXFILESIZE
-#define MAXFILESIZE MAXFILEPIXELS*32+96 //! DO NOT CHANGE THIS, PLEASE CHANGE THE ONE ABOVE
-#endif
-
 char CIMGheader[8]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
-
-
-
-typedef struct {
-    uint8_t r; // red
-    uint8_t g; // green
-    uint8_t b; // blue
-    uint8_t a; // alpha
-} Color;
-
-Color int32ToColor(uint32_t colorInt) {
-    // TODO
-}
 
 typedef struct {
     uint16_t width;
     uint16_t height;
-    Color* pixels; //? color is stored as RGBA in the file
+    uint32_t* pixels; //? color is stored as RGBA
 } PixelData;
 
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* pd) {
-    pd->pixels=(Color*) malloc(pd->width*pd->height*4); //? the 4 is the bytes required to store a Color struct
+    pd->pixels=(uint32_t*) malloc(pd->width*pd->height*4); //? the 4 is the bytes required to store a color
 }
 
 // frees memory after you're done with the pixel data
@@ -115,14 +94,15 @@ PixelData decodeCMIGfile(char* directory,bool printErrors) {
         fread(sizeData,16,6,pFile); // same as usual but read in chunks of 16 bits instead
         data.width=sizeData[4]; // size data is stored in the order of wh, allowing 2^32 different size combinations (2^16 max size for each axis)
         data.height=sizeData[5];
+        uint32_t magicNumber=data.width*data.height+3; // trust it works
 
         // TODO img type and channel bit depth
         // TODO? invent some compression method
         //* ^ not too keen on any of these tbh
 
         allocPixelMemory(&data); //* here comes the fun(?) part :)
-        uint32_t readPdata[MAXFILESIZE/32]; // TODO please find a better way to do lines 111- to not waste so much ram
-        fread(readPdata,32,MAXFILESIZE/32,pFile); //? i think this should work (will clarify after i finish encodePixelData())
+        uint32_t readPdata[magicNumber]; // TODO please find a better way to do lines 111- to not waste so much ram
+        fread(readPdata,32,magicNumber,pFile); //? i think this should work (will clarify after i finish encodePixelData())
     } else {
         if (printErrors) {
             printf("coolIMG.h: File at %s is not a CMIG file",directory);
@@ -133,18 +113,27 @@ PixelData decodeCMIGfile(char* directory,bool printErrors) {
 // encodes pixel data into a CIMG file
 void encodePixelData(PixelData pd,char* directory) {
     FILE* pFile;
-    pFile=fopen(directory,"w"); // if the file doesn't exist in the dir, it'll create itself (i think)
+    pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
+    uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions+2 empty bytes and 4 for each pixel)
 
-    char rawData[MAXFILESIZE/8]; // stores all the data in a 1D byte array
-    sprintf("%s%s%s",CIMGheader,int16ToChar2(pd.width),int16ToChar2(pd.height)); // damn
+    char rawData[magicNumber]; // stores all the data in a 1D byte array
+    sprintf(rawData,"%s",CIMGheader); // adding the header
+    charVector2 width=int16ToChar2(pd.width);
+    charVector2 height=int16ToChar2(pd.height);
+    rawData[8]=width.value[0]; // is there a more efficient way to do thiiiiiiiiiiiiiiiiiis
+    rawData[9]=width.value[1];
+    rawData[10]=height.value[0];
+    rawData[11]=height.value[1];
+    
     
     for (uint32_t index=12; index<pd.height*pd.width+12; index+=4) { // oh boy
-        rawData[index]=pd.pixels[index].r; // "yeah bro, c is very readable"
-        rawData[index+1]=pd.pixels[index].g;
-        rawData[index+2]=pd.pixels[index].b;
-        rawData[index+3]=pd.pixels[index].a;
+        charVector4 char4=int32ToChar4(pd.pixels[index/4-3]); // what
+        rawData[index]=char4.value[0];
+        rawData[index+1]=char4.value[1];
+        rawData[index+2]=char4.value[2];
+        rawData[index+3]=char4.value[3];
     }
-
-    fprintf(pFile,"%s",rawData);
+    
+    fwrite(rawData,8,magicNumber,pFile);
     fclose(pFile); // hope this works
 }
