@@ -8,6 +8,6 @@ int main() {
     red.width=1;
     red.height=1;
     allocPixelMemory(&red);
-    red.pixels[0]=(Color) {255,0,0,255};
-    encodePixelData(red,"red.cmig");
+    red.pixels[0]=0xFF0000FF; // opaque red
+    encodePixelData(red,"../images/red.cimg");
 }
