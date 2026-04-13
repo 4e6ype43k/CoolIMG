@@ -54,22 +54,23 @@ typedef struct {
 
 // uses some dark c magic to convert uint16_t to charVector2
 charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
-    char char1=input; // trust the process
-    char char0=(input-char1)/16; // this MUST work
+    uint8_t char1=input; // trust the process
+    uint8_t char0=(input-char1)/256; // this MUST work
+    printf("%d,%d\n",char1,char0);
     charVector2 vectorOut={char0,char1}; // this works somehow
     return vectorOut;
 }
 
 // idk
 charVector4 int32ToChar4(uint32_t input) {
-    short yes1=input;
-    short yes0=(input-yes1)/256;
+    uint16_t yes1=input;
+    uint16_t yes0=(input-yes1)/65536;
     charVector2 a0=int16ToChar2(yes0);
     charVector2 a1=int16ToChar2(yes1);
-    char halt=a0.value[0];
-    char where=a0.value[1];
-    char is=a1.value[0];
-    char gabriel=a1.value[1];
+    uint8_t halt=a0.value[0];
+    uint8_t where=a0.value[1];
+    uint8_t is=a1.value[0];
+    uint8_t gabriel=a1.value[1];
     charVector4 what={halt,where,is,gabriel}; //! AND WHAT HAVE YOU DONE TO HIM?
     return what; //? ... how can this be? Bested by this... this, THING?!
 }

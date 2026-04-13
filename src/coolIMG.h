@@ -114,9 +114,9 @@ PixelData decodeCMIGfile(char* directory,bool printErrors) {
 void encodePixelData(PixelData pd,char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
-    uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions+2 empty bytes and 4 for each pixel)
+    uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions (2 for each) and 4 for each pixel)
 
-    char rawData[magicNumber]; // stores all the data in a 1D byte array
+    char* rawData=(char*) calloc(magicNumber,8); // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
     charVector2 width=int16ToChar2(pd.width);
     charVector2 height=int16ToChar2(pd.height);
