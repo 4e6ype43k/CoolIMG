@@ -134,6 +134,6 @@ void encodePixelData(PixelData pd,char* directory) {
         rawData[index+3]=char4.value[3];
     }
     
-    fwrite(rawData,8,magicNumber,pFile);
+    fwrite(rawData,1,magicNumber,pFile);
     fclose(pFile); // hope this works
 }

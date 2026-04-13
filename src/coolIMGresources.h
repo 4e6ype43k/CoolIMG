@@ -56,7 +56,6 @@ typedef struct {
 charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
     uint8_t char1=input; // trust the process
     uint8_t char0=(input-char1)/256; // this MUST work
-    printf("%d,%d\n",char1,char0);
     charVector2 vectorOut={char0,char1}; // this works somehow
     return vectorOut;
 }
