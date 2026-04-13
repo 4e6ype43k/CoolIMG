@@ -34,7 +34,6 @@ IN THE SOFTWARE.
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #ifndef CIMGR
 #define CIMGR
@@ -79,5 +78,10 @@ charVector4 int32ToChar4(uint32_t input) {
 void readFileHeader(char outputString[8],char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"r");
-    fread(outputString,8,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
+    fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
+}
+
+// this is used only because decodeCIMGfile() outputs pixel data little endian for some reason
+uint32_t flipInt32(uint32_t input) {
+
 }

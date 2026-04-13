@@ -3,6 +3,15 @@
 
 #include "../src/coolIMG.h"
 
+//* Expected output (hex):
+/*
+
+red.cimg:
+
+43 49 4d 47 0d 0a 1a 0a 00 01 00 01 ff 00 00 ff
+
+*/
+
 int main() {
     PixelData red;
     red.width=1;
@@ -10,4 +19,5 @@ int main() {
     allocPixelMemory(&red);
     red.pixels[0]=0xFF0000FF; // opaque red
     encodePixelData(red,"../images/red.cimg");
+    freePixelMemory(&red);
 }

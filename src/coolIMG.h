@@ -45,7 +45,7 @@ header|size (wh order)|2 empty bytes|array of pixel colour data in human-readabl
 #define CIMG_H
 #endif
 
-char CIMGheader[8]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
 
 typedef struct {
     uint16_t width;
@@ -65,34 +65,34 @@ void freePixelMemory(PixelData* pd) {
 
 //! the function below will give a segmentation fault if the path has no file
 // checks first 8 bytes of the file to check if they match the CIMG header. directory could also be an absolute path
-bool isCIMG(char* directory) {
+int isCIMG(char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"r");
 
     char header[8];
-    fread(header,8,8,pFile); 
-    bool match=1;
+    fread(header,1,8,pFile); 
 
+    int count=0;
     for (uint8_t index=0; index<8; index++) { // compares the two because strcmp() doesn't want to do its allocated job
-        if (header[index]!=CIMGheader[index]) {
-            match=0; // sets output to 0 (false) if there is 1 mismatch
-        }
+        if (header[index]==CIMGheader[index]) {
+            count++; // adds 1 to counter for each match
+        } //? why? because if the input header is [0x43 0x49], the algorithm won't find a mismatch and will output true
     }
     
-    return match;
+    return count==8;
 }
 
 //! the function below will give a segmentation fault if the path has no file
 // gets CIMG file pixel data
-PixelData decodeCMIGfile(char* directory,bool printErrors) {
+PixelData decodeCIMGfile(char* directory,int printErrors) {
     if (isCIMG(directory)) {
         FILE* pFile;
         pFile=fopen(directory,"r"); // read-only cos we won't modify anything
 
         PixelData data;
-        uint16_t sizeData[6]; // the size info is 2 bytes (16 bits long)
-        fread(sizeData,16,6,pFile); // same as usual but read in chunks of 16 bits instead
-        data.width=sizeData[4]; // size data is stored in the order of wh, allowing 2^32 different size combinations (2^16 max size for each axis)
+        uint16_t sizeData[6]; // the size info is 2 bytes (16 bits long) each
+        fread(sizeData,2,6,pFile); // same as usual but read in chunks of 16 bits instead
+        data.width=sizeData[4]; // size data is stored in the order of wh, allowing 2^32 different size combinations (2^16 max size for both axis)
         data.height=sizeData[5];
         uint32_t magicNumber=data.width*data.height+3; // trust it works
 
@@ -101,17 +101,22 @@ PixelData decodeCMIGfile(char* directory,bool printErrors) {
         //* ^ not too keen on any of these tbh
 
         allocPixelMemory(&data); //* here comes the fun(?) part :)
-        uint32_t readPdata[magicNumber]; // TODO please find a better way to do lines 111- to not waste so much ram
-        fread(readPdata,32,magicNumber,pFile); //? i think this should work (will clarify after i finish encodePixelData())
+        uint32_t* readPdata=calloc(magicNumber,32); //* no, im not rewriting this
+        fread(readPdata,32,magicNumber,pFile); // what have i done
+        for (int x=0;x<magicNumber;x++) { // huhhh??>>??
+            data.pixels[x]=readPdata[x]; // the output is... LITTLE ENDIAN FOR SOME REASON.
+        }
+
+        return data;
     } else {
-        if (printErrors) {
+        if (printErrors==1) {
             printf("coolIMG.h: File at %s is not a CMIG file",directory);
         }
     }
 }
 
 // encodes pixel data into a CIMG file
-void encodePixelData(PixelData pd,char* directory) {
+void encodeCIMGfile(PixelData pd,char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
     uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions (2 for each) and 4 for each pixel)
@@ -126,7 +131,7 @@ void encodePixelData(PixelData pd,char* directory) {
     rawData[11]=height.value[1];
     
     
-    for (uint32_t index=12; index<pd.height*pd.width+12; index+=4) { // oh boy
+    for (uint32_t index=12; index<magicNumber; index+=4) { // oh boy
         charVector4 char4=int32ToChar4(pd.pixels[index/4-3]); // what
         rawData[index]=char4.value[0];
         rawData[index+1]=char4.value[1];
