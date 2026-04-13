@@ -82,37 +82,8 @@ int isCIMG(char* directory) {
     return count==8;
 }
 
-//! the function below will give a segmentation fault if the path has no file
-// gets CIMG file pixel data
-PixelData decodeCIMGfile(char* directory,int printErrors) {
-    if (isCIMG(directory)) {
-        FILE* pFile;
-        pFile=fopen(directory,"r"); // read-only cos we won't modify anything
-
-        PixelData data;
-        uint16_t sizeData[6]; // the size info is 2 bytes (16 bits long) each
-        fread(sizeData,2,6,pFile); // same as usual but read in chunks of 16 bits instead
-        data.width=sizeData[4]; // size data is stored in the order of wh, allowing 2^32 different size combinations (2^16 max size for both axis)
-        data.height=sizeData[5];
-        uint32_t magicNumber=data.width*data.height+3; // trust it works
-
-        // TODO img type and channel bit depth
-        // TODO? invent some compression method
-        //* ^ not too keen on any of these tbh
-
-        allocPixelMemory(&data); //* here comes the fun(?) part :)
-        uint32_t* readPdata=calloc(magicNumber,32); //* no, im not rewriting this
-        fread(readPdata,32,magicNumber,pFile); // what have i done
-        for (int x=0;x<magicNumber;x++) { // huhhh??>>??
-            data.pixels[x]=readPdata[x]; // the output is... LITTLE ENDIAN FOR SOME REASON.
-        }
-
-        return data;
-    } else {
-        if (printErrors==1) {
-            printf("coolIMG.h: File at %s is not a CMIG file",directory);
-        }
-    }
+PixelData decodeCIMGfile(char* directory) {
+    // TODO continue this tomorrow cos im way too exhausted with all that happened with this method
 }
 
 // encodes pixel data into a CIMG file
@@ -121,7 +92,7 @@ void encodeCIMGfile(PixelData pd,char* directory) {
     pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
     uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions (2 for each) and 4 for each pixel)
 
-    char* rawData=(char*) calloc(magicNumber,8); // stores all the data in a 1D byte array
+    char rawData[magicNumber]; // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
     charVector2 width=int16ToChar2(pd.width);
     charVector2 height=int16ToChar2(pd.height);

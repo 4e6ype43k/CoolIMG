@@ -83,5 +83,13 @@ void readFileHeader(char outputString[8],char* directory) {
 
 // this is used only because decodeCIMGfile() outputs pixel data little endian for some reason
 uint32_t flipInt32(uint32_t input) {
-
+    charVector4 vector=int32ToChar4(input);
+    uint32_t output=0;
+    // base 16 goes up by, well, powers of 16
+    // and that squared is 256
+    output+=(uint32_t)vector.value[3]*16777216;
+    output+=(uint32_t)vector.value[2]*65536;
+    output+=(uint32_t)vector.value[1]*256;
+    output+=(uint32_t)vector.value[0];
+    return output;
 }
