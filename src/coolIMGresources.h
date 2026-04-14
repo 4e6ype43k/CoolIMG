@@ -59,37 +59,10 @@ charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
     return vectorOut;
 }
 
-// idk
-charVector4 int32ToChar4(uint32_t input) {
-    uint16_t yes1=input;
-    uint16_t yes0=(input-yes1)/65536;
-    charVector2 a0=int16ToChar2(yes0);
-    charVector2 a1=int16ToChar2(yes1);
-    uint8_t halt=a0.value[0];
-    uint8_t where=a0.value[1];
-    uint8_t is=a1.value[0];
-    uint8_t gabriel=a1.value[1];
-    charVector4 what={halt,where,is,gabriel}; //! AND WHAT HAVE YOU DONE TO HIM?
-    return what; //? ... how can this be? Bested by this... this, THING?!
-}
-
 //! the function below will give a segmentation fault if the path has no file
 // it is what it says on the tin
 void readFileHeader(char outputString[8],char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"r");
     fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
-}
-
-// this is used only because decodeCIMGfile() outputs pixel data little endian for some reason
-uint32_t flipInt32(uint32_t input) {
-    charVector4 vector=int32ToChar4(input);
-    uint32_t output=0;
-    // base 16 goes up by, well, powers of 16
-    // and that squared is 256
-    output+=(uint32_t)vector.value[3]*16777216;
-    output+=(uint32_t)vector.value[2]*65536;
-    output+=(uint32_t)vector.value[1]*256;
-    output+=(uint32_t)vector.value[0];
-    return output;
 }

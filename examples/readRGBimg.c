@@ -4,7 +4,7 @@
 #include "../src/coolIMG.h"
 
 int main() {
-    PixelData pd=decodeCIMGfile("../images/rgb.cimg",0);
-    printf("RGB:\n");
-    printf("%x,%x,%x\n",pd.pixels[0],pd.pixels[1],pd.pixels[2]);
+    PixelData pd=decodeCIMGfile("../images/rgb.cimg");
+    // printf("RGB:\n");
+    printf("\n%x,%x,%x\n",pd.pixels[0],pd.pixels[1],pd.pixels[2]);
 }

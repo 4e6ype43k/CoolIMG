@@ -48,15 +48,22 @@ header|size (wh order)|2 empty bytes|array of pixel colour data in human-readabl
 char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
 
 typedef struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+} Color;
+
+typedef struct {
     uint16_t width;
     uint16_t height;
-    uint32_t* pixels; //? color is stored as RGBA
+    Color* pixels; //? color is stored as RGBA in the file
 } PixelData;
 
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* pd) {
-    pd->pixels=(uint32_t*) malloc(pd->width*pd->height*4); //? the 4 is the bytes required to store a color
-}
+    pd->pixels=(Color*) calloc(pd->width*pd->height,4); //? the 4 is the bytes required to store a color
+} //? i use calloc instead of malloc so that the script won't crash when there is an undefined color (which there won't be if i calloc)
 
 // frees memory after you're done with the pixel data
 void freePixelMemory(PixelData* pd) {
@@ -83,7 +90,26 @@ int isCIMG(char* directory) {
 }
 
 PixelData decodeCIMGfile(char* directory) {
-    // TODO continue this tomorrow cos im way too exhausted with all that happened with this method
+    if (isCIMG(directory)) {
+        FILE* pFile; // you know the drill
+        pFile=fopen(directory,"rb");
+        uint16_t sizeData[6]; // there are two axis of size (both take up 2 bytes each) + the header (8 bytes/2 bytes=4)
+        fread(sizeData,2,6,pFile);
+
+        uint16_t width=sizeData[4]/256; // width is stored first
+        uint16_t height=sizeData[5]/256;
+        PixelData data={width,height,NULL}; // null because the third arg will be an array on the next line
+        allocPixelMemory(&data);
+        uint32_t magicNumber=width*height+3; // same as in encodeCIMGfile() but divided by four cos the data type takes four times the memory than char
+
+        uint32_t fileData[magicNumber]; // ... just dont look at the memory usage... please
+        fread(fileData,4,magicNumber,pFile);
+
+        for (uint32_t x=0; x<magicNumber-3; x++) {
+            data.pixels[x]=fileData[x];
+            printf("%x,",data.pixels[x]);
+        }
+    }
 }
 
 // encodes pixel data into a CIMG file
@@ -103,11 +129,11 @@ void encodeCIMGfile(PixelData pd,char* directory) {
     
     
     for (uint32_t index=12; index<magicNumber; index+=4) { // oh boy
-        charVector4 char4=int32ToChar4(pd.pixels[index/4-3]); // what
-        rawData[index]=char4.value[0];
-        rawData[index+1]=char4.value[1];
-        rawData[index+2]=char4.value[2];
-        rawData[index+3]=char4.value[3];
+        Color temp=pd.pixels[index/4-3];
+        rawData[index]=temp.r;
+        rawData[index+1]=temp.g;
+        rawData[index+2]=temp.b;
+        rawData[index+3]=temp.a;
     }
     
     fwrite(rawData,1,magicNumber,pFile);
