@@ -5,7 +5,6 @@
 
 int main() {
     PixelData pd=decodeCIMGfile("../images/rgb.cimg");
-    // printf("RGB:\n");
     for (char x=0; x<3; x++) {
         printColor(pd.pixels[x],0);
         printf("\n");
