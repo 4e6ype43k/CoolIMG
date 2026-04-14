@@ -47,6 +47,7 @@ header|size (wh order)|2 empty bytes|array of pixel colour data in human-readabl
 
 char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
 
+// the return of the color
 typedef struct {
     uint8_t r;
     uint8_t g;
@@ -54,11 +55,21 @@ typedef struct {
     uint8_t a;
 } Color;
 
+// stores the actual data from/for a CIMG file
 typedef struct {
     uint16_t width;
     uint16_t height;
     Color* pixels; //? color is stored as RGBA in the file
 } PixelData;
+
+// hm i wonder what this does
+void printColor(Color clr,int hex) {
+    if (hex==0) {
+        printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
+    } else {
+        printf("%x,%x,%x,%x",clr.r,clr.g,clr.b,clr.a);
+    }
+}
 
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* pd) {
@@ -92,7 +103,7 @@ int isCIMG(char* directory) {
 PixelData decodeCIMGfile(char* directory) {
     if (isCIMG(directory)) {
         FILE* pFile; // you know the drill
-        pFile=fopen(directory,"rb");
+        pFile=fopen(directory,"rb"); // reading THE binary
         uint16_t sizeData[6]; // there are two axis of size (both take up 2 bytes each) + the header (8 bytes/2 bytes=4)
         fread(sizeData,2,6,pFile);
 
@@ -100,15 +111,16 @@ PixelData decodeCIMGfile(char* directory) {
         uint16_t height=sizeData[5]/256;
         PixelData data={width,height,NULL}; // null because the third arg will be an array on the next line
         allocPixelMemory(&data);
-        uint32_t magicNumber=width*height+3; // same as in encodeCIMGfile() but divided by four cos the data type takes four times the memory than char
+        uint32_t magicNumber=width*height*4+12; // 12 bytes for header+dimensions (2 for each) and 4 for each pixel
 
-        uint32_t fileData[magicNumber]; // ... just dont look at the memory usage... please
-        fread(fileData,4,magicNumber,pFile);
+        uint8_t fileData[magicNumber]; // ... just dont look at the memory usage... please
+        fread(fileData,1,magicNumber,pFile);
 
-        for (uint32_t x=0; x<magicNumber-3; x++) {
-            data.pixels[x]=fileData[x];
-            printf("%x,",data.pixels[x]);
+        for (uint32_t x=0; x<magicNumber-12; x+=4) {
+            data.pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]};
         }
+
+        return data;
     }
 }
 
@@ -116,7 +128,7 @@ PixelData decodeCIMGfile(char* directory) {
 void encodeCIMGfile(PixelData pd,char* directory) {
     FILE* pFile;
     pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
-    uint32_t magicNumber=pd.width*pd.height*4+12; // it's different now (12 bytes for header+dimensions (2 for each) and 4 for each pixel)
+    uint32_t magicNumber=pd.width*pd.height*4+12;  // same as in decodeCIMGfile()
 
     char rawData[magicNumber]; // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
