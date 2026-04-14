@@ -32,7 +32,7 @@ IN THE SOFTWARE.
 
 /* CIMG file layout (| indicates separation between words):
 
-header|size (wh order)|2 empty bytes|array of pixel colour data in human-readable, ARGB format
+header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 
 */
 
@@ -103,7 +103,7 @@ int isCIMG(char* directory) {
 PixelData decodeCIMGfile(char* directory) {
     if (isCIMG(directory)) {
         FILE* pFile; // you know the drill
-        pFile=fopen(directory,"rb"); // reading THE binary
+        pFile=fopen(directory,"rb"); // reading the BINARY
         uint16_t sizeData[6]; // there are two axis of size (both take up 2 bytes each) + the header (8 bytes/2 bytes=4)
         fread(sizeData,2,6,pFile);
 
@@ -117,7 +117,7 @@ PixelData decodeCIMGfile(char* directory) {
         fread(fileData,1,magicNumber,pFile);
 
         for (uint32_t x=0; x<magicNumber-12; x+=4) {
-            data.pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]};
+            data.pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]}; // x is the red value, x+1 is green and etc
         }
 
         return data;

@@ -6,7 +6,7 @@
 //* Expected output (hex):
 /*
 
-red.cimg:
+images/red.cimg:
 
 43 49 4d 47 0d 0a 1a 0a 00 01 00 01 ff 00 00 ff
 
@@ -18,6 +18,6 @@ int main() {
     red.height=1;
     allocPixelMemory(&red);
     red.pixels[0]=(Color) {255,0,0,255}; // opaque red
-    encodePixelData(red,"../images/red.cimg");
+    encodeCIMGfile(red,"../images/red.cimg");
     freePixelMemory(&red);
 }
