@@ -39,7 +39,7 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 //* this is the file that allows you to read/write CIMG files
 
 #pragma once
-#include "coolIMGresources.h"
+#include "toolkit.h" // one of my other projects
 
 #ifndef CIMG_H
 #define CIMG_H

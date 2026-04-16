@@ -1,4 +1,5 @@
 *.out
 red.cimg
 archive.txt
+toolkit.h
 # ^ you don't want to know the story behind that
