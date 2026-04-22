@@ -65,10 +65,10 @@ void freePixelMemory(PixelData* pd) {
 }
 
 //! the function below will give a segmentation fault if the path has no file
-// checks first 8 bytes of the file to check if they match the CIMG header. directory could also be an absolute path
-int isCIMG(char* directory) {
+// checks first 8 bytes of the file to check if they match the CIMG header. path could also be an absolute path
+int isCIMG(char* path) {
     FILE* pFile;
-    pFile=fopen(directory,"r");
+    pFile=fopen(path,"r");
 
     char header[8];
     fread(header,1,8,pFile); 
@@ -83,10 +83,10 @@ int isCIMG(char* directory) {
     return count==8;
 }
 
-PixelData decodeCIMGfile(char* directory) {
-    if (isCIMG(directory)) {
+PixelData decodeCIMGfile(char* path) {
+    if (isCIMG(path)) {
         FILE* pFile; // you know the drill
-        pFile=fopen(directory,"rb"); // reading the BINARY
+        pFile=fopen(path,"rb"); // reading the BINARY
         uint16_t sizeData[6]; // there are two axis of size (both take up 2 bytes each) + the header (8 bytes/2 bytes=4)
         fread(sizeData,2,6,pFile);
 
@@ -108,9 +108,9 @@ PixelData decodeCIMGfile(char* directory) {
 }
 
 // encodes pixel data into a CIMG file
-void encodeCIMGfile(PixelData pd,char* directory) {
+void encodeCIMGfile(PixelData pd,char* path) {
     FILE* pFile;
-    pFile=fopen(directory,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
+    pFile=fopen(path,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
     uint32_t magicNumber=pd.width*pd.height*4+12;  // same as in decodeCIMGfile()
 
     char rawData[magicNumber]; // stores all the data in a 1D byte array

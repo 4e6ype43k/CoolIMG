@@ -59,8 +59,8 @@ charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
 
 //! the function below will give a segmentation fault if the path has no file
 // it is what it says on the tin
-void readFileHeader(char outputString[8],char* directory) {
+void readFileHeader(char outputString[8],char* path) {
     FILE* pFile;
-    pFile=fopen(directory,"r");
+    pFile=fopen(path,"r");
     fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
 }

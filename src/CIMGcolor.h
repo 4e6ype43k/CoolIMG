@@ -46,7 +46,7 @@ typedef struct {
 // hm i wonder what this does
 void printColor(Color clr,int hex) {
     if (hex==0) {
-        printf("0x%d%d%d%d",clr.r,clr.g,clr.b,clr.a);
+        printf("0x%d,0x%d,0x%d,0x%d",clr.r,clr.g,clr.b,clr.a);
     } else {
         printf("0x%x%x%x%x",clr.r,clr.g,clr.b,clr.a);
     }
