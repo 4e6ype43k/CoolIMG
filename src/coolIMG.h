@@ -39,21 +39,13 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 //* this is the file that allows you to read/write CIMG files
 
 #pragma once
-#include <toolkit.h> // one of my other projects
+#include "CIMGcolor.h"
 
 #ifndef CIMG_H
 #define CIMG_H
 #endif
 
 char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
-
-// the return of the color
-typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t a;
-} Color;
 
 // stores the actual data from/for a CIMG file
 typedef struct {

@@ -17,7 +17,7 @@ int main() {
     red.width=1;
     red.height=1;
     allocPixelMemory(&red);
-    red.pixels[0]=(Color) {255,0,0,255}; // opaque red
+    red.pixels[0]=RED;
     encodeCIMGfile(red,"../images/red.cimg");
     freePixelMemory(&red);
 }
