@@ -28,26 +28,39 @@ IN THE SOFTWARE.
 
 */
 
-#include "toolkit.h"
+#pragma once
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
 
-#define BLACK (Color) {0,0,0,255}
-#define WHITE (Color) {255,255,255,255}
-#define RED (Color) {255,0,0,255}
-#define GREEN (Color) {0,255,0,255}
-#define BLUE (Color) {0,0,255,255}
+#ifndef TOOLKIT
+#define TOOLKIT
+#endif
+
+#ifdef EVIL //! DONT
+#pragma GCC poison printf
+#endif
 
 typedef struct {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t a;
-} Color;
+    char value[2];
+} charVector2;
 
-// hm i wonder what this does
-void printColor(Color clr,int hex) {
-    if (hex==0) {
-        printf("0x%d%d%d%d",clr.r,clr.g,clr.b,clr.a);
-    } else {
-        printf("0x%x%x%x%x",clr.r,clr.g,clr.b,clr.a);
-    }
+typedef struct {
+    char value[4];
+} charVector4;
+
+// uses some dark c magic to convert uint16_t to charVector2
+charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
+    uint8_t char1=input; // trust the process
+    uint8_t char0=(input-char1)/256; // this MUST work
+    charVector2 vectorOut={char0,char1}; // this works somehow
+    return vectorOut;
+}
+
+//! the function below will give a segmentation fault if the path has no file
+// it is what it says on the tin
+void readFileHeader(char outputString[8],char* directory) {
+    FILE* pFile;
+    pFile=fopen(directory,"r");
+    fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
 }
