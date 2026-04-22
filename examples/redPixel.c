@@ -1,7 +1,7 @@
 //! THIS IS NOT THE FILE YOU SHOULD INCLUDE
 //! THIS FILE IS FOR DEMONSTRATIONAL PURPOSES ONLY
 
-#include "../src/coolIMG.h"
+#include "../src/CIMGmanipulation.h"
 
 //* Expected output (hex):
 /*
@@ -17,7 +17,7 @@ int main() {
     red.width=1;
     red.height=1;
     allocPixelMemory(&red);
-    red.pixels[0]=RED;
+    drawPoint(&red,RED,(uint16_t[2]) {0,0}); // on the canvas at red, draw a red pixel at (0,0)
     encodeCIMGfile(red,"../images/red.cimg");
     freePixelMemory(&red);
 }
