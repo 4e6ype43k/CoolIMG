@@ -54,15 +54,6 @@ typedef struct {
     Color* pixels; //? color is stored as RGBA in the file
 } PixelData;
 
-// hm i wonder what this does
-void printColor(Color clr,int hex) {
-    if (hex==0) {
-        printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
-    } else {
-        printf("%x,%x,%x,%x",clr.r,clr.g,clr.b,clr.a);
-    }
-}
-
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* pd) {
     pd->pixels=(Color*) calloc(pd->width*pd->height,4); //? the 4 is the bytes required to store a color
