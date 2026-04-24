@@ -35,3 +35,24 @@ IN THE SOFTWARE.
 void drawPoint(PixelData* data, Color color,uint16_t pos[2]) {
     data->pixels[posToIndex(*data,pos)]=color; // wow
 }
+
+// scales the dimensions of the struct by the scale factor (stretches pixels too)
+// ! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
+PixelData scaleBy(PixelData data, uint16_t scale[2]) {
+    PixelData newData={data.width*scale[0],data.height*scale[1],NULL};
+    allocPixelMemory(&newData);
+    for (uint32_t x=0;x<data.width*scale[0];x+=scale[0]){ // index 0 is x
+        for (int16_t countX=scale[0];countX>=0;countX--) { // huh
+            for (uint32_t y=0; y<data.height*scale[1];y+=scale[1]) {
+                for (int16_t countY=scale[1];countY>=0;countY--) {
+                    drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {(x/scale[0])+countX,(y/scale[1])+countY})], (uint16_t[2]) {x+countX,y+countY}); // please work
+                }
+            }
+        }
+    }
+    for (int x=0;x<newData.width*newData.height;x++) {
+        printColor(newData.pixels[x],1);
+        printf("\n");
+    }
+    return newData;
+}
