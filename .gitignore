@@ -6,3 +6,4 @@ h.*
 Makefile
 hi.cimg
 greenCross.cimg
+.gitignore

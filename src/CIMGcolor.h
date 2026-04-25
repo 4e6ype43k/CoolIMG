@@ -45,9 +45,37 @@ typedef struct {
     uint8_t a;
 } Color;
 
+// this feels like reinventing fire
+// add is prioritized
+Color mixColors(Color base,Color add) {
+    if (add.a==255) { // if add.a is full, the returned Color will be add
+        return add;
+    } else if (add.a==0) { // if it is zero, base will be returned
+        return base;
+    } else if (base.a==0) { // but if base.a is 0, add wil be returned again
+        return add;
+    } else { // no
+        uint16_t alphaSum=base.a+add.a; // will be useful as we are splitting the Color channels by ratio
+        uint16_t r=(base.r*base.a/alphaSum)+(add.r*add.a/alphaSum); // checking if any channels go over 255 (2^8-1)
+        uint16_t g=(base.g*base.a/alphaSum)+(add.g*add.a/alphaSum); // all int so no float
+        uint16_t b=(base.b*base.a/alphaSum)+(add.b*add.a/alphaSum);
+
+        if (r>255) r=255; // yes, you can just do that
+        if (g>255) g=255;
+        if (b>255) b=255;
+
+        if (r==254) r=255; // slight error correction
+        if (g==254) g=255;
+        if (b==254) b=255;
+
+        return (Color) {r,g,b,255}; // next customer
+    }
+}
+
 // hm i wonder what this does
-void printColor(Color clr,int hex) {
-    if (hex==0) {
+// hex is either 1 or 0, and if 1, prints the RGBA as hex
+void printColor(Color clr,uint8_t hex) {
+    if (!hex) {
         printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
     } else {
         printf("0x%x %x %x %x",clr.r,clr.g,clr.b,clr.a);
