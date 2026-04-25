@@ -54,12 +54,25 @@ void fill(PixelData* data,Color clr) {
 //! THE LINE MIGHT BE WEIRD AS THE GRADIENT ISN'T FLOAT
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
     int16_t gradient=(int16_t) (pos1[1]-pos0[1])/(pos1[0]-pos0[0]); // AKA the rise/run or steepness of the line
-    int16_t offset=pos0[1]-pos0[0]*gradient; // by how much the line is offset
-    for (uint16_t x=0; x<data->width; x++) { // goes over the width and applies mx+c to find y
-        int16_t y=gradient*x+offset; // see? it is useful
-        drawPoint(data,clr,(uint16_t[2]) {x,y});
+    int16_t offset=pos0[1]-(int16_t) pos0[0]*gradient; // by how much the line is offset
+    printf("%d,%d; %d,%d;\n",pos0[0],pos0[1],pos1[0],pos1[1]);
+    printf("%d,%d;\n%d\n",gradient,offset,pos0[0]>pos1[0]);
+    if (pos0[0]>pos1[0]) {
+        for (uint16_t x=pos1[0]*gradient; x<=pos0[0]*gradient; x++) { // goes over the width and applies mx+c to find y
+            int16_t y=gradient*x+offset*gradient; // see? it IS useful
+            printf("%d,%d\n",x,y);
+            drawPoint(data,clr,(uint16_t[2]) {x/(int16_t) gradient,y/(int16_t) gradient});
+        }
+    } else {
+        for (uint16_t x=pos0[0]*gradient; x<=pos1[0]*gradient; x++) { // trust the process
+            int16_t y=gradient*x+offset*gradient;
+            printf("%d,%d\n",x,y);
+            drawPoint(data,clr,(uint16_t[2]) {x/(int16_t) gradient,y/(int16_t) gradient});
+        }
     }
+    printf("\n");
 } // theres no way this worked first try
+// ^ not anymore tho
 
 // help me
 // setting fill.a as 0 will not draw the inside

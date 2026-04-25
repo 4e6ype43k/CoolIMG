@@ -64,4 +64,13 @@ void readFileHeader(char outputString[8],char* path) {
     fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
 }
 
+// returns x as a positive number
+uint16_t absoluteValue(int16_t x) {
+    if (x>=0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
+
 #endif
