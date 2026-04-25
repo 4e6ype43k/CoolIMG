@@ -35,7 +35,6 @@ IN THE SOFTWARE.
 
 #ifndef TOOLKIT
 #define TOOLKIT
-#endif
 
 #ifdef EVIL //! DONT
 #pragma GCC poison printf
@@ -64,3 +63,5 @@ void readFileHeader(char outputString[8],char* path) {
     pFile=fopen(path,"r");
     fread(outputString,1,8,pFile); // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
 }
+
+#endif

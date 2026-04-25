@@ -30,7 +30,10 @@ IN THE SOFTWARE.
 
 //* this file is for manipulating PixelData struct, like drawing shapes
 
-#include "coolIMG.h"
+#ifndef CIMG_M_H
+#define CIMG_M_H
+
+#include "coolIMG.h" // this current header (NOT coolIMG.h) acts as an extension, so is dependant on the included header
 
 void drawPoint(PixelData* data, Color color,uint16_t pos[2]) {
     data->pixels[posToIndex(*data,pos)]=color; // wow
@@ -41,18 +44,14 @@ void drawPoint(PixelData* data, Color color,uint16_t pos[2]) {
 PixelData scaleBy(PixelData data, uint16_t scale[2]) {
     PixelData newData={data.width*scale[0],data.height*scale[1],NULL};
     allocPixelMemory(&newData);
-    for (uint32_t x=0;x<data.width*scale[0];x+=scale[0]){ // index 0 is x
-        for (int16_t countX=scale[0];countX>=0;countX--) { // huh
-            for (uint32_t y=0; y<data.height*scale[1];y+=scale[1]) {
-                for (int16_t countY=scale[1];countY>=0;countY--) {
-                    drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {(x/scale[0])+countX,(y/scale[1])+countY})], (uint16_t[2]) {x+countX,y+countY}); // please work
-                }
-            }
+    for (uint16_t x=0;x<newData.width;x++) { // goes over the width of the new struct
+        uint16_t actualX=(x-(x%scale[0]))/scale[0]; // the x of the input PD
+        for (uint16_t y=0;y<newData.height;y++) { // the height
+            uint16_t actualY=(y-(y%scale[1]))/scale[1]; // same but for y
+            drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {actualX,actualY})],(uint16_t[2]) {x,y}); // theres no way this actually works
         }
-    }
-    for (int x=0;x<newData.width*newData.height;x++) {
-        printColor(newData.pixels[x],1);
-        printf("\n");
     }
     return newData;
 }
+
+#endif

@@ -43,7 +43,6 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 
 #ifndef CIMG_H
 #define CIMG_H
-#endif
 
 char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
 
@@ -142,3 +141,5 @@ void encodeCIMGfile(PixelData pd,char* path) {
     fwrite(rawData,1,magicNumber,pFile);
     fclose(pFile); // hope this works
 }
+
+#endif

@@ -27,6 +27,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 */
+#ifndef CIMGCOLOR
+#define CIMGCOLOR
 
 #include "toolkit.h"
 
@@ -51,3 +53,5 @@ void printColor(Color clr,int hex) {
         printf("0x%x %x %x %x",clr.r,clr.g,clr.b,clr.a);
     }
 }
+
+#endif
