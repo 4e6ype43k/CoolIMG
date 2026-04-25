@@ -39,8 +39,19 @@ void drawPoint(PixelData* data, Color color,uint16_t pos[2]) {
     data->pixels[posToIndex(*data,pos)]=color; // wow
 }
 
+// draws a line between two points
+//! THE LINE MIGHT BE WEIRD AS THE GRADIENT ISN'T FLOAT
+void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
+    int16_t gradient=(int16_t) (pos1[1]-pos0[1])/(pos1[0]-pos0[0]); // AKA the rise/run or steepness of the line
+    int16_t offset=pos0[1]-pos0[0]*gradient; // by how much the line is offset
+    for (uint16_t x=0; x<data->width; x++) { // goes over the width and applies mx+c to find y
+        int16_t y=gradient*x+offset; // see? it is useful
+        drawPoint(data,clr,(uint16_t[2]) {x,y});
+    }
+} // theres no way this worked first try
+
 // scales the dimensions of the struct by the scale factor (stretches pixels too)
-// ! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
+//! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
 PixelData scaleBy(PixelData data, uint16_t scale[2]) {
     PixelData newData={data.width*scale[0],data.height*scale[1],NULL};
     allocPixelMemory(&newData);

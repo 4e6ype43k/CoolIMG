@@ -54,13 +54,13 @@ typedef struct {
 } PixelData;
 
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
-void allocPixelMemory(PixelData* pd) {
-    pd->pixels=(Color*) calloc(pd->width*pd->height,4); //? the 4 is the bytes required to store a color
+void allocPixelMemory(PixelData* data) {
+    data->pixels=(Color*) calloc(data->width*data->height,4); //? the 4 is the bytes required to store a color
 } //? i use calloc instead of malloc so that the script won't crash when there is an undefined color (which there won't be if i calloc)
 
 // frees memory after you're done with the pixel data
-void freePixelMemory(PixelData* pd) {
-    free(pd->pixels);
+void freePixelMemory(PixelData* data) {
+    free(data->pixels);
 }
 
 // converts a position on a PD and returns an index matching the pos
@@ -115,15 +115,15 @@ PixelData decodeCIMGfile(char* path) {
 }
 
 // encodes pixel data into a CIMG file
-void encodeCIMGfile(PixelData pd,char* path) {
+void encodeCIMGfile(PixelData data,char* path) {
     FILE* pFile;
     pFile=fopen(path,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
-    uint32_t magicNumber=pd.width*pd.height*4+12;  // same as in decodeCIMGfile()
+    uint32_t magicNumber=data.width*data.height*4+12;  // same as in decodeCIMGfile()
 
     char rawData[magicNumber]; // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
-    charVector2 width=int16ToChar2(pd.width);
-    charVector2 height=int16ToChar2(pd.height);
+    charVector2 width=int16ToChar2(data.width);
+    charVector2 height=int16ToChar2(data.height);
     rawData[8]=width.value[0]; // is there a more efficient way to do thiiiiiiiiiiiiiiiiiis
     rawData[9]=width.value[1];
     rawData[10]=height.value[0];
@@ -131,7 +131,7 @@ void encodeCIMGfile(PixelData pd,char* path) {
     
     
     for (uint32_t index=12; index<magicNumber; index+=4) { // oh boy
-        Color temp=pd.pixels[index/4-3];
+        Color temp=data.pixels[index/4-3];
         rawData[index]=temp.r;
         rawData[index+1]=temp.g;
         rawData[index+2]=temp.b;
