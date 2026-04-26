@@ -34,6 +34,7 @@ IN THE SOFTWARE.
 #define CIMG_M_H
 
 #include "coolIMG.h" // this current header (NOT coolIMG.h) acts as an extension, so is dependant on the included header
+#include <math.h> // well thats a prob-lm
 
 // if clr.a is 0, then it just won't draw anything
 void drawPoint(PixelData* data, Color clr,uint16_t pos[2]) {
@@ -44,37 +45,56 @@ void drawPoint(PixelData* data, Color clr,uint16_t pos[2]) {
 
 void fill(PixelData* data,Color clr) {
     for (uint16_t x=0;x<data->width;x++) {
-        for (uint16_t y=0; y<data->height; y++) { // note to future me: remember to swap vars in for loops when you ctrl+c ctrl+v them, otherwise they'll never stop, please
+        for (uint16_t y=0; y<data->height; y++) { // note to future me: always remember to swap vars in for loops when you ctrl+c ctrl+v them, otherwise they'll never stop, please
             drawPoint(data,clr,(uint16_t[2]) {x,y}); // its this simple
         }
     }
 }
 
 // draws a line between two points
-//! THE LINE MIGHT BE WEIRD AS THE GRADIENT ISN'T FLOAT
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
-    int16_t gradient=(int16_t) (pos1[1]-pos0[1])/(pos1[0]-pos0[0]); // AKA the rise/run or steepness of the line
-    int16_t offset=pos0[1]-(int16_t) pos0[0]*gradient; // by how much the line is offset
-    printf("%d,%d; %d,%d;\n",pos0[0],pos0[1],pos1[0],pos1[1]);
-    printf("%d,%d;\n%d\n",gradient,offset,pos0[0]>pos1[0]);
-    if (pos0[0]>pos1[0]) {
-        for (uint16_t x=pos1[0]*gradient; x<=pos0[0]*gradient; x++) { // goes over the width and applies mx+c to find y
-            int16_t y=gradient*x+offset*gradient; // see? it IS useful
-            printf("%d,%d\n",x,y);
-            drawPoint(data,clr,(uint16_t[2]) {x/(int16_t) gradient,y/(int16_t) gradient});
+    if (pos0[1]!=pos1[1]) { // checks if y isn't the same
+        if (pos0[1]>pos1[1]) { // going over the height first
+            double gradientInverse=(double) (pos0[0]-pos1[0])/(pos0[1]-pos1[1]); // gradient relative to y
+            int16_t offset=pos0[0]-pos0[1]*gradientInverse; // uhhhh
+
+            for (uint16_t y=pos1[1];y<=pos0[1];y++) { // trust the process
+                uint16_t x=ceil(y*gradientInverse+offset);
+                drawPoint(data,clr,(uint16_t[2]) {x,y});
+            }
+        } else { // through the mirror
+            double gradientInverse=(double) (pos1[0]-pos0[0])/(pos1[1]-pos0[1]);
+            int16_t offset=pos0[0]-pos0[1]*gradientInverse;
+
+            for (uint16_t y=pos0[1];y<=pos1[1];y++) {
+                uint16_t x=ceil(y*gradientInverse+offset);
+                drawPoint(data,clr,(uint16_t[2]) {x,y});
+            }
         }
-    } else {
-        for (uint16_t x=pos0[0]*gradient; x<=pos1[0]*gradient; x++) { // trust the process
-            int16_t y=gradient*x+offset*gradient;
-            printf("%d,%d\n",x,y);
-            drawPoint(data,clr,(uint16_t[2]) {x/(int16_t) gradient,y/(int16_t) gradient});
+    } else { // wide boi
+        if (pos0[0]>pos1[0]) {
+            double gradient=(double) (pos0[1]-pos1[1])/(pos0[0]-pos1[0]); // gradient relative to x
+            int16_t offset=pos0[1]-pos0[0]*gradient; // uhhhh™
+
+            for (uint16_t x=pos1[1];x<=pos0[1];x++) {
+                uint16_t y=ceil(x*gradient+offset);
+                drawPoint(data,clr,(uint16_t[2]) {x,y});
+            }
+        } else {
+            double gradient=(double) (pos1[1]-pos0[1])/(pos1[0]-pos0[0]);
+            int16_t offset=pos0[1]-pos0[0]*gradient;
+
+            for (uint16_t x=pos0[0];x<=pos1[0];x++) {
+                uint16_t y=ceil(x*gradient+offset);
+                drawPoint(data,clr,(uint16_t[2]) {x,y});
+            }
         }
     }
-    printf("\n");
 } // theres no way this worked first try
-// ^ not anymore tho
+// ^ not anymore tho (well, not for lines where gradient!=1)
 
 // help me
+// had to rewrite drawLine() for this btw
 // setting fill.a as 0 will not draw the inside
 // setting outline.a as 0 will not draw the outline 
 void drawTriangle(PixelData* data, uint16_t pos[3][2],Color outline,Color fill) {
