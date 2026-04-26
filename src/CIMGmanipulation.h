@@ -98,20 +98,25 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
 // setting fill.a as 0 will not draw the inside
 // setting outline.a as 0 will not draw the outline 
 void drawTriangle(PixelData* data, uint16_t pos[3][2],Color outline,Color fill) {
-    if (outline.a!=0) { // if alpha is 0, why draw the outline?
-        drawLine(data,outline,pos[0],pos[1]);
-        drawLine(data,outline,pos[1],pos[2]);
-        drawLine(data,outline,pos[0],pos[2]);
-    }
-
-    if (fill.a!=0) { // same here
+    if (fill.a!=0) { // if alpha is 0, why draw the inside?
         uint16_t minY=-1; // trying to find the range of y
+        uint16_t minIndex=0; // index of smallest y
         uint16_t maxY=0; // minY is -1 so that every value would (hopefully) be less than it
         for (uint8_t x=0;x<3;x++) { // comparing ys to minY and maxY
-            if (minY>pos[x][1]) minY=pos[x][1];
+            if (minY>pos[x][1]) {minY=pos[x][1]; minIndex=x;}
             if (maxY<pos[x][1]) maxY=pos[x][1];
         }
+        
+
+        for (uint16_t y=minY;y<maxY;y++) { // we know the y values, but now we need the x values
+        }
     }
+
+    if (outline.a!=0) { // same here
+            drawLine(data,outline,pos[0],pos[1]);
+            drawLine(data,outline,pos[1],pos[2]);
+            drawLine(data,outline,pos[0],pos[2]);
+        }
 }
 
 // scales the dimensions of the struct by the scale factor (stretches pixels too)

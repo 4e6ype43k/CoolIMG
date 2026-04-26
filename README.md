@@ -14,7 +14,7 @@
 
 ### What are the disadvantages?
 - **The actual image files take up way more space than an average png**
-- **File read functions will crash if the path has no file**
+- **File read functions will give the infamous segmentation fault if the path has no file**
 - **Pixel data is stored on the heap** (though it isn't hard to alloc and free the memory)
 
 ## ***Use this at your own risk***
