@@ -33,8 +33,8 @@ IN THE SOFTWARE.
 #include <stdint.h>
 #include <stdlib.h>
 
-#ifndef TOOLKIT
-#define TOOLKIT
+#ifndef CIMG_T_H
+#define CIMG_T_H
 
 #ifdef EVIL //! DONT
 #pragma GCC poison printf

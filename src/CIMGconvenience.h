@@ -27,26 +27,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 */
-#ifndef CIMG_CLR_H
-#define CIMG_CLR_H
 
-#include "coolIMG.h"
+//* some type aliases that can be mildly convenient
 
-#define BLANK (Color) {0,0,0,0}
-#define BLACK (Color) {0,0,0,255}
-#define WHITE (Color) {255,255,255,255}
-#define RED (Color) {255,0,0,255}
-#define GREEN (Color) {0,255,0,255}
-#define BLUE (Color) {0,0,255,255}
+#ifndef CIMG_C_H
+#define CIMG_C_H
 
-// hm i wonder what this does
-// hex is either 1 or 0, and if 1, prints the RGBA as hex
-void printColor(Color clr,uint8_t hex) {
-    if (!hex) {
-        printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
-    } else {
-        printf("0x%x %x %x %x",clr.r,clr.g,clr.b,clr.a);
-    }
-}
+#include <stdint.h>
+#include "CIMGcolor.h"
+
+typedef uint8_t u8;
+
+typedef uint16_t u16;
+typedef uint16_t ui16_2[2]; // useful when to convert coord type (ie as in (ui16_2) {x,y})
+typedef uint16_t u162[2]; // even shorter
+typedef int16_t i16;
+
+typedef uint32_t u32;
+
+typedef Color cl;
+
+typedef PixelData PD;
 
 #endif

@@ -59,9 +59,9 @@ Color mixColors(Color base,Color add) {
     if (add.a==255) { // if add.a is full, the returned Color will be add
         return add;
     } else if (add.a==0) { // if it is zero, base will be returned
-        return base;
+        return (Color) {base.r,base.g,base.b,255}; // in this land, alpha is always 255
     } else if (base.a==0) { // but if base.a is 0, add wil be returned again
-        return add;
+        return (Color) {add.r,add.g,add.b,255};
     } else { // no
         uint16_t alphaSum=base.a+add.a; // will be useful as we are splitting the Color channels by ratio
         uint16_t r=(base.r*base.a/alphaSum)+(add.r*add.a/alphaSum); // checking if any channels go over 255 (2^8-1)
