@@ -2,6 +2,7 @@
 //! THIS FILE IS FOR DEMONSTRATIONAL PURPOSES ONLY
 
 #include "../src/CIMGmanipulation.h"
+#include "../src/CIMGcolor.h"
 
 //* Expected output (hex):
 /*

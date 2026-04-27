@@ -1,4 +1,5 @@
 #include "../src/CIMGmanipulation.h"
+#include "../src/CIMGcolor.h"
 
 int main(){
     PixelData p={3,3,NULL};

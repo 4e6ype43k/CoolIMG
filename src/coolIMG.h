@@ -39,12 +39,46 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 //* this is the file that allows you to read/write CIMG files
 
 #pragma once
-#include "CIMGcolor.h"
+#include "CIMGtoolkit.h"
 
 #ifndef CIMG_H
 #define CIMG_H
 
 char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+
+typedef struct {
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
+} Color;
+
+// this feels like reinventing fire
+// add is prioritized
+Color mixColors(Color base,Color add) {
+    if (add.a==255) { // if add.a is full, the returned Color will be add
+        return add;
+    } else if (add.a==0) { // if it is zero, base will be returned
+        return base;
+    } else if (base.a==0) { // but if base.a is 0, add wil be returned again
+        return add;
+    } else { // no
+        uint16_t alphaSum=base.a+add.a; // will be useful as we are splitting the Color channels by ratio
+        uint16_t r=(base.r*base.a/alphaSum)+(add.r*add.a/alphaSum); // checking if any channels go over 255 (2^8-1)
+        uint16_t g=(base.g*base.a/alphaSum)+(add.g*add.a/alphaSum); // all int so no float
+        uint16_t b=(base.b*base.a/alphaSum)+(add.b*add.a/alphaSum);
+
+        if (r>255) r=255; // yes, you can just do that
+        if (g>255) g=255;
+        if (b>255) b=255;
+
+        if (r==254) r=255; // slight error correction
+        if (g==254) g=255;
+        if (b==254) b=255;
+
+        return (Color) {r,g,b,255}; // next customer
+    }
+}
 
 // stores the actual data from/for a CIMG file
 typedef struct {
