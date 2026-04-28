@@ -101,12 +101,59 @@ void drawTriangleWireframe(PixelData* data, uint16_t pos0[2],uint16_t pos1[2],ui
 }
 
 // help me
-void drawTriangle(PixelData* data,uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2],Color clr) {
-    uint16_t centerX=ceil((double) (pos0[0]+pos1[0]+pos2[0])/3);
-    uint16_t centerY=ceil((double) (pos0[1]+pos1[1]+pos2[1])/3);
-    // todo find area
+void drawTriangleFilled(PixelData* data,uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2],Color clr) {
+    uint16_t centerX=ceil((double) (pos0[0]+pos1[0]+pos2[0])/3); // all points will slowly approach the center and on each iteration, will draw a wireframe
+    uint16_t centerY=ceil((double) (pos0[1]+pos1[1]+pos2[1])/3); // i know there are other methods to do this but they are kind of complicated
 
-    drawTriangleWireframe(data,pos0,pos1,pos2,clr);
+    int16_t x0add=pos0[0]<centerX ? 1:-1; // if x0<centerX, we will increase it, otherwise, we will decrease it
+    int16_t y0add=pos0[1]<centerY ? 1:-1;
+    int16_t x1add=pos1[0]<centerX ? 1:-1;
+    int16_t y1add=pos1[1]<centerY ? 1:-1;
+    int16_t x2add=pos2[0]<centerX ? 1:-1;
+    int16_t y2add=pos2[1]<centerY ? 1:-1;
+
+    uint8_t x0stop=0; // to check if x0==centerX
+    uint8_t y0stop=0;
+    uint8_t x1stop=0;
+    uint8_t y1stop=0;
+    uint8_t x2stop=0;
+    uint8_t y2stop=0;
+
+    while (!(x0stop&&y0stop&&x1stop&&y1stop&&x2stop&&y2stop)) { // why
+        drawTriangleWireframe(data,pos0,pos1,pos2,clr); // one of many
+        if (pos0[0]==centerX) { // wow
+            x0stop=1;
+        } else {
+            pos0[0]+=x0add;
+        }
+        if (pos0[1]==centerY) {
+            y0stop=1;
+        } else {
+            pos0[1]+=y0add;
+        }
+
+        if (pos1[0]==centerX) {
+            x1stop=1;
+        } else {
+            pos1[0]+=x1add;
+        }
+        if (pos1[1]==centerY) {
+            y1stop=1;
+        } else {
+            pos1[1]+=y1add;
+        }
+
+        if (pos2[0]==centerX) {
+            x2stop=1;
+        } else {
+            pos2[0]+=x2add;
+        }
+        if (pos2[1]==centerY) {
+            y2stop=1;
+        } else {
+            pos2[1]+=y2add;
+        }
+    }
 }
 
 // scales the dimensions of the struct by the scale factor (stretches pixels too)

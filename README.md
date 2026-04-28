@@ -10,6 +10,7 @@
 - **Lightweight**
 - **No dependencies** (expect, of course, the standard C library)
 - **Portable**
+- **Incredibly easy to use**
 - **Very cool!**
 
 ### What are the disadvantages?
