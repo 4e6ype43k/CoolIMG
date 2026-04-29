@@ -94,14 +94,14 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
 // ^ not anymore tho (well, not for lines where gradient!=1)
 
 // draws something but i cant really figure out what exactly
-void drawTriangleWireframe(PixelData* data, uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2],Color clr) {
+void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2]) {
     drawLine(data,clr,pos0,pos1); // this is horrendously easy
     drawLine(data,clr,pos1,pos2);
     drawLine(data,clr,pos0,pos2);
 }
 
 // help me
-void drawTriangleFilled(PixelData* data,uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2],Color clr) {
+void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2]) {
     uint16_t centerX=ceil((double) (pos0[0]+pos1[0]+pos2[0])/3); // all points will slowly approach the center and on each iteration, will draw a wireframe
     uint16_t centerY=ceil((double) (pos0[1]+pos1[1]+pos2[1])/3); // i know there are other methods to do this but they are kind of complicated
 
@@ -120,7 +120,7 @@ void drawTriangleFilled(PixelData* data,uint16_t pos0[2],uint16_t pos1[2],uint16
     uint8_t y2stop=0;
 
     while (!(x0stop&&y0stop&&x1stop&&y1stop&&x2stop&&y2stop)) { // why
-        drawTriangleWireframe(data,pos0,pos1,pos2,clr); // one of many
+        drawTriangleWireframe(data,clr,pos0,pos1,pos2); // one of many
         if (pos0[0]==centerX) { // wow
             x0stop=1;
         } else {
