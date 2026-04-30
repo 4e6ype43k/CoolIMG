@@ -156,7 +156,7 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1
     }
 }
 
-// scales the dimensions of the struct by the scale factor (stretches pixels too)
+// scales the dimensions of the struct by the scale factor (stretches pixels too) and returns new PD
 //! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
 PixelData scaleBy(PixelData data, uint16_t scale[2]) {
     PixelData newData={data.width*scale[0],data.height*scale[1],NULL};
@@ -167,6 +167,42 @@ PixelData scaleBy(PixelData data, uint16_t scale[2]) {
             uint16_t actualY=(y-(y%scale[1]))/scale[1]; // same but for y
             drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {actualX,actualY})],(uint16_t[2]) {x,y}); // theres no way this actually works
         }
+    }
+    return newData;
+}
+
+// takes a chunk of the struct between two points and returns the pixel data of the area (if this makes any sense)
+PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
+    uint16_t minX; // setting the range for the function to work on
+    uint16_t maxX;
+    uint16_t maxY;
+    uint16_t minY;
+
+    if (pos0[0]>pos1[0]) { // i could do a fancy-shmancy ternary operator thingy but then i would need to do it twice for each axis
+        maxX=pos0[0];
+        minX=pos1[0];
+    } else {
+        maxX=pos1[0];
+        minX=pos0[0];
+    }
+
+    if (pos0[1]>pos1[1]) { // again
+        maxY=pos0[1];
+        minY=pos1[1];
+    } else {
+        maxY=pos1[1];
+        minY=pos0[1];
+    }
+
+    PixelData newData={maxX-minX+1,maxY-minY+1,NULL}; //? +1 because i dont want 0-wide arrays
+    allocPixelMemory(&newData);
+
+    for (uint16_t x=minX;x<=maxX;x++) { // from smallest to largest INCLUSIVE (because otherwise if any of the axis are the same for p0 and p1, the func will output nothing)
+        uint16_t newX=x-minX; // the x of newData
+        for (uint16_t y=minY;y<=maxY;y++) {
+            uint16_t newY=y-minY;
+            drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {x,y})],(uint16_t[2]) {newX,newY}); // im so sorry to PUSH UR T3MPRR so much with this bad code
+        }                                                                                                    // i need to ACT RIGHT more often
     }
     return newData;
 }

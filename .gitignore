@@ -1,6 +1,5 @@
 *.out
 red.cimg
-archive.txt
 h.*
 *.sh
 Makefile
