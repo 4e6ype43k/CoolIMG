@@ -100,9 +100,9 @@ void freePixelMemory(PixelData* data) {
 // converts a position on a PD and returns an index matching the pos
 // returns 0 if the pos is out of range
 uint32_t posToIndex(PixelData data,uint16_t pos[2]) {
-    if ((pos[0]<data.width&&pos[1]<data.height)==1) { // index 0 is x, 1 is y
-        return data.height*pos[1]+pos[0]; // there is y lots of height and there is x
-    }
+    if (pos[0]<data.width&&pos[1]<data.height) { // index 0 is x, 1 is y
+        return data.width*pos[1]+pos[0]; // there is y lots of width (as the colors are stored in a 1d array from (0,0) to max pos) and there is x
+    } // sounds counter-intuitive but it works
 }
 
 //! the function below will give a segmentation fault if the path has no file

@@ -203,8 +203,23 @@ PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
             uint16_t newY=y-minY;
             drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {x,y})],(uint16_t[2]) {newX,newY}); // im so sorry to PUSH UR T3MPRR so much with this bad code
         }                                                                                                    // i need to ACT RIGHT more often
-    }
+    }                                                                                                        // this is probably because I MIGHT B3 SICK
+    
     return newData;
+}
+
+// adds add pixels to base, starting from pos
+PixelData fuseImages(PixelData* base, PixelData add, uint16_t pos[2]) {
+    uint16_t maxX=pos[0]+add.width; // the max x we will reach in the loop
+    uint16_t maxY=pos[1]+add.height; // same but for y
+
+    for (uint16_t x=pos[0];x<maxX;x++) {
+        uint16_t addX=x-pos[0]; // x of add
+        for (uint16_t y=pos[1];y<maxY;y++) {
+            // dont really need addY, cos it'll be used only once
+            drawPoint(base,add.pixels[posToIndex(add,(uint16_t[2]) {addX,y-pos[1]})],(uint16_t[2]) {x,y}); // hmmm, what should i reference now
+        }
+    }
 }
 
 #endif
