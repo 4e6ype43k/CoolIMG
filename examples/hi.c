@@ -9,12 +9,12 @@
 
 int main() {
     PD fontIMG=decodeCIMGfile("../images/font.cimg");
-    PD hi={6,5,NULL}; // the letters are 3 wide and 5 high each
+    PD hi={7,5,NULL}; // the letters are 3 wide and 5 high each
     allocPixelMemory(&hi);
     PD h=cropImage(fontIMG,(u162) {0,25}, (u162) {2,29}); // uhhh
     PD i=cropImage(fontIMG,(u162) {3,25}, (u162) {5,29});
     fuseImages(&hi,h,(u162) {0,0});
-    fuseImages(&hi,i,(u162) {3,0});
+    fuseImages(&hi,i,(u162) {4,0});
     encodeCIMGfile(hi,"../images/hi.cimg");
     encodeCIMGfile(h,"../images/h.cimg");
 
