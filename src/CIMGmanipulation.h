@@ -43,6 +43,49 @@ void drawPoint(PixelData* data, Color clr,uint16_t pos[2]) {
     }
 }
 
+// inverts color at pos
+void invertPoint(PixelData* data, uint16_t pos[2]) {
+    Color clr=data->pixels[posToIndex(*data,pos)]; // storing the color for processing
+    Color newColor={255-clr.r,255-clr.g,255-clr.b,clr.a}; // 255-rgb is pretty much inverting the color
+    //* a is the same cos... we dont invert alpha ok?
+    drawPoint(data,newColor,pos);
+}
+
+// inverts all pixels between p0 and p1
+void invertArea(PixelData* data, uint16_t pos0[2], uint16_t pos1[2]) {
+    uint16_t minX; // reduce, reuse, recycle
+    uint16_t maxX;
+    uint16_t maxY;
+    uint16_t minY;
+
+    if (pos0[0]>pos1[0]) {
+        maxX=pos0[0];
+        minX=pos1[0];
+    } else {
+        maxX=pos1[0];
+        minX=pos0[0];
+    }
+
+    if (pos0[1]>pos1[1]) {
+        maxY=pos0[1];
+        minY=pos1[1];
+    } else {
+        maxY=pos1[1];
+        minY=pos0[1];
+    }
+
+    for (uint16_t x=minX;x<=maxX;x++) {
+        for (uint16_t y=minY;y<=maxY;y++) {
+            invertPoint(data,(uint16_t[2]) {x,y}); // why
+        }
+    }
+}
+
+// inverts all pixels in PD
+void invertFill(PixelData* data){
+    invertArea(data,(uint16_t[2]) {0,0},(uint16_t[2]) {data->width-1,data->height-1}); // wow
+}
+
 void fill(PixelData* data,Color clr) {
     for (uint16_t x=0;x<data->width;x++) {
         for (uint16_t y=0; y<data->height; y++) { // note to future me: always remember to swap vars in for loops when you ctrl+c ctrl+v them, otherwise they'll never stop, please
