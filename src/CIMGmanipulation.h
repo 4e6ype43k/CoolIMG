@@ -59,7 +59,7 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
             int16_t offset=pos0[0]-pos0[1]*gradientInverse; // uhhhh
 
             for (uint16_t y=pos1[1];y<=pos0[1];y++) { // trust the process
-                uint16_t x=ceil(y*gradientInverse+offset);
+                uint16_t x=ceil(y*gradientInverse+offset); //? why ceil? because I WANT IT, I WANT IT QUITE A LOT! I'M IN IT COS I CAN BE, YOU CAN'T TELL ME THAT I'M NOT!
                 drawPoint(data,clr,(uint16_t[2]) {x,y});
             }
         } else { // through the mirror
@@ -176,7 +176,6 @@ PixelData scaleBy(PixelData data, uint16_t scale[2]) {
 //! SETTING DIMENSIONS LESS THAN THOSE OF data WILL RETURN A 0 SIZE PD (same reason)
 PixelData scaleTo(PixelData data, uint16_t dimensions[2]) {
     uint16_t scale[2]={ceil(dimensions[0]/data.width),ceil(dimensions[1]/data.height)}; // finding out the scale factor
-    //? why ceil? because I WANT IT, I WANT IT QUITE A LOT! I'M IN IT COS I CAN BE, YOU CAN'T TELL ME THAT I'M NOT!
     return scaleBy(data,scale); // "yeah, i'll just make it a bit different"
 }
 
@@ -218,7 +217,7 @@ PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
 }
 
 // adds add pixels to base, starting from pos
-PixelData fuseImages(PixelData* base, PixelData add, uint16_t pos[2]) {
+void fuseImages(PixelData* base, PixelData add, uint16_t pos[2]) {
     uint16_t maxX=pos[0]+add.width; // the max x we will reach in the loop... a disintegration loop...
     uint16_t maxY=pos[1]+add.height; // same but for y
 

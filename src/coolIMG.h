@@ -105,6 +105,20 @@ uint32_t posToIndex(PixelData data,uint16_t pos[2]) {
     } // sounds counter-intuitive but it works
 }
 
+// if you just assign 1 PD to another, they will point to the same array, so changing one will change the other
+// this is where this function comes in
+PixelData copyData(PixelData data){
+    uint16_t width=data.width; // we will reference it quite a few times
+    uint16_t height=data.height;
+    PixelData newData={width,height,NULL}; // we do NOT assign pixels to point to the same array
+    allocPixelMemory(&newData); // nearly forgot this
+
+    for (uint32_t x=0; x<width*height; x++) {
+        newData.pixels[x]=data.pixels[x]; // going over each pixel and yeah
+    }
+    return newData;
+}
+
 //! the function below will give a segmentation fault if the path has no file
 // checks first 8 bytes of the file to check if they match the CIMG header. path could also be an absolute path
 int isCIMG(char* path) {
