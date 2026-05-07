@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 */
+
 #ifndef CIMG_CLR_H
 #define CIMG_CLR_H
 
@@ -39,13 +40,60 @@ IN THE SOFTWARE.
 #define GREEN (Color) {0,255,0,255}
 #define BLUE (Color) {0,0,255,255}
 
+typedef enum {
+    DENARY, // to print as base10
+    HEX
+} COLOR_PRINT_TYPE; // only used for printColor()
+
 // hm i wonder what this does
-// hex is either 1 or 0, and if 1, prints the RGBA as hex
-void printColor(Color clr,uint8_t hex) {
-    if (!hex) {
+void printColor(Color clr,COLOR_PRINT_TYPE printType) {
+    if (!printType) {
         printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
     } else {
-        printf("0x%x %x %x %x",clr.r,clr.g,clr.b,clr.a);
+        printf("0x%x 0x%x 0x%x 0x%x",clr.r,clr.g,clr.b,clr.a);
+    }
+}
+
+typedef enum { // TODO add all orders
+    RGBA,
+    RGAB, // so many spell checks
+    RAGB, // 4!=4*3*2*1=... 24... damn
+    ARGB,
+
+    GBAR, // we (yes WE) are ALL using GBAR
+    GBRA,
+    GRBA,
+} COLOR_UINT_TYPE; // only used for the function below
+
+// converts Color struct to uint32_t
+uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
+    switch (order) {
+        case ARGB:
+        return clr.a*16777216+clr.r*65536+clr.g*256+clr.b; // why am i doing this
+        break;
+
+        case RGAB:
+        return clr.r*16777216+clr.g*65536+clr.a*256+clr.b;
+        break;
+
+        case RAGB:
+        return clr.r*16777216+clr.a*65536+clr.g*256+clr.b;
+        break;
+
+        case GBAR:
+        return clr.g*16777216+clr.b*65536+clr.a*256+clr.r;
+        break;
+
+        case GBRA:
+        return clr.g*16777216+clr.b*65536+clr.r*256+clr.a;
+        break;
+
+        case GRBA:
+        return clr.g*16777216+clr.r*65536+clr.b*256+clr.a;
+        break;
+
+        default: // would return RGBA as default
+        return clr.r*16777216+clr.g*65536+clr.b*256+clr.a; // why am i doing this
     }
 }
 
