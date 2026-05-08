@@ -36,12 +36,27 @@ IN THE SOFTWARE.
 #include "coolIMG.h" // this current header (NOT coolIMG.h) acts as an extension, so is dependant on the included header
 #include <math.h> // well thats a prob-lm
 
+#pragma region SET_COLOR
+
 // if clr.a is 0, then it just won't draw anything
 void drawPoint(PixelData* data, Color clr,uint16_t pos[2]) {
     if (clr.a>0){
         data->pixels[posToIndex(*data,pos)]=mixColors(data->pixels[posToIndex(*data,pos)],clr); // wow
     }
 }
+
+// sets all Color structs in data to be of the same color
+void fill(PixelData* data,Color clr) {
+    for (uint16_t x=0;x<data->width;x++) {
+        for (uint16_t y=0; y<data->height; y++) { // note to future me: always remember to swap vars in for loops when you ctrl+c ctrl+v them, otherwise they'll never stop, please
+            drawPoint(data,clr,(uint16_t[2]) {x,y}); // its this simple
+        }
+    }
+}
+
+#pragma endregion
+
+#pragma region INVERT
 
 // inverts color at pos
 void invertPoint(PixelData* data, uint16_t pos[2]) {
@@ -86,13 +101,9 @@ void invertFill(PixelData* data){
     invertArea(data,(uint16_t[2]) {0,0},(uint16_t[2]) {data->width-1,data->height-1}); // wow
 }
 
-void fill(PixelData* data,Color clr) {
-    for (uint16_t x=0;x<data->width;x++) {
-        for (uint16_t y=0; y<data->height; y++) { // note to future me: always remember to swap vars in for loops when you ctrl+c ctrl+v them, otherwise they'll never stop, please
-            drawPoint(data,clr,(uint16_t[2]) {x,y}); // its this simple
-        }
-    }
-}
+#pragma endregion
+
+#pragma region SHAPE_DRAW
 
 // draws a line between two points
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
@@ -199,6 +210,10 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1
     }
 }
 
+#pragma endregion
+
+#pragma region SIZE_MANIPULATION
+
 // scales the dimensions of the struct by the scale factor (stretches pixels too) and returns new PD
 //! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
 PixelData scaleBy(PixelData data, uint16_t scale[2]) {
@@ -272,5 +287,7 @@ void fuseImages(PixelData* base, PixelData add, uint16_t pos[2]) {
         }
     }
 }
+
+#pragma endregion
 
 #endif

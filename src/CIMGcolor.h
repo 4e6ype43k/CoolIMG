@@ -39,11 +39,15 @@ IN THE SOFTWARE.
 #define RED (Color) {255,0,0,255}
 #define GREEN (Color) {0,255,0,255}
 #define BLUE (Color) {0,0,255,255}
+#define CYAN (Color) {0,255,255,255}
+#define MAGENTA (Color) {255,0,255,255}
+#define YELLOW (Color) {255,255,0,255}
 
-typedef enum {
+// only used for printColor()
+typedef enum COLOR_PRINT_TYPE {
     DENARY, // to print as base10
     HEX
-} COLOR_PRINT_TYPE; // only used for printColor()
+} COLOR_PRINT_TYPE;
 
 // hm i wonder what this does
 void printColor(Color clr,COLOR_PRINT_TYPE printType) {
@@ -54,7 +58,13 @@ void printColor(Color clr,COLOR_PRINT_TYPE printType) {
     }
 }
 
-typedef enum { // TODO add all orders
+// inverts clr rgb
+Color invertColor(Color clr){
+    return (Color) {255-clr.r,255-clr.g,255-clr.b,clr.a}; // yeah
+}
+
+// only used for the function below
+typedef enum COLOR_UINT_TYPE { // TODO add all orders
     RGBA,
     RGAB, // so many spell checks
     RAGB, // 4!=4*3*2*1=... 24... damn
@@ -63,7 +73,12 @@ typedef enum { // TODO add all orders
     GBAR, // we (yes WE) are ALL using GBAR
     GBRA,
     GRBA,
-} COLOR_UINT_TYPE; // only used for the function below
+
+    RBGA,
+    BRGA,
+    
+    RBAG
+} COLOR_UINT_TYPE; // no unnamed structs or enums
 
 // converts Color struct to uint32_t
 uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
@@ -90,6 +105,18 @@ uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
 
         case GRBA:
         return clr.g*16777216+clr.r*65536+clr.b*256+clr.a;
+        break;
+
+        case RBGA:
+        return clr.r*16777216+clr.b*65536+clr.g*256+clr.a;
+        break;
+
+        case BRGA:
+        return clr.b*16777216+clr.r*65536+clr.g*256+clr.a;
+        break;
+
+        case RBAG:
+        return clr.r*16777216+clr.b*65536+clr.a*256+clr.g;
         break;
 
         default: // would return RGBA as default

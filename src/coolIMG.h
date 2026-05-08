@@ -44,9 +44,9 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 #ifndef CIMG_H
 #define CIMG_H
 
-char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+#pragma region STRUCTS
 
-typedef struct {
+typedef struct Color {
     uint8_t r;
     uint8_t g;
     uint8_t b;
@@ -81,7 +81,7 @@ Color mixColors(Color base,Color add) {
 }
 
 // stores the actual data from/for a CIMG file
-typedef struct {
+typedef struct Color {
     uint16_t width;
     uint16_t height;
     Color* pixels; //? color is stored as RGBA in the file
@@ -119,6 +119,12 @@ PixelData copyData(PixelData data){
     return newData;
 }
 
+#pragma endregion
+
+#pragma region FILE_IO
+
+char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+
 //! the function below will give a segmentation fault if the path has no file
 // checks first 8 bytes of the file to check if they match the CIMG header. path could also be an absolute path
 int isCIMG(char* path) {
@@ -132,7 +138,7 @@ int isCIMG(char* path) {
     for (uint8_t index=0; index<8; index++) { // compares the two because strcmp() doesn't want to do its allocated job
         if (header[index]==CIMGheader[index]) {
             count++; // adds 1 to counter for each match
-        } //? why? because if the input header is [0x43 0x49], the algorithm won't find a mismatch and will output true
+        } //? why? because if the input header is (ie) [0x43 0x49], the algorithm won't find a mismatch and will output true
     }
     
     return count==8;
@@ -189,5 +195,7 @@ void encodeCIMGfile(PixelData data,char* path) {
     fwrite(rawData,1,magicNumber,pFile);
     fclose(pFile); // hope this works
 }
+
+#pragma endregion
 
 #endif
