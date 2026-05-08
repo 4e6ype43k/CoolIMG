@@ -35,18 +35,19 @@ IN THE SOFTWARE.
 
 #include <stdint.h>
 #include "CIMGcolor.h"
+#include "CIMGmanipulation.h"
 
 typedef uint8_t u8;
 
 typedef uint16_t u16;
-typedef uint16_t ui16_2[2]; // useful when to convert coord type (ie as in (ui16_2) {x,y})
+typedef uint16_t ui16_2[2]; // useful when converting to coord type (ie as in (ui16_2) {x,y})
 typedef uint16_t u162[2]; // even shorter
 typedef int16_t i16;
 
 typedef uint32_t u32;
 
 typedef Color cl;
-
 typedef PixelData PD;
+typedef Triangle tri;
 
 #endif

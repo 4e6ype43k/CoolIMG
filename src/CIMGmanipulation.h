@@ -103,9 +103,24 @@ void invertFill(PixelData* data){
 
 #pragma endregion
 
+#pragma region SHAPE_STRUCTS
+
+// could be useful in some very niche situations
+// order is x0,y0,x1...y2
+typedef struct Triangle {
+    uint16_t pos[6];
+} Triangle;
+
+// TODO? add more
+
+#pragma endregion
+
 #pragma region SHAPE_DRAW
 
+#pragma region NO_STRUCT
+
 // draws a line between two points
+// TODO add width
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
     if (pos0[1]!=pos1[1]) { // checks if y isn't the same
         if (pos0[1]>pos1[1]) { // going over the height first
@@ -148,6 +163,7 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
 // ^ not anymore tho (well, not for lines where gradient!=1)
 
 // draws something but i cant really figure out what exactly
+// TODO add width
 void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2]) {
     drawLine(data,clr,pos0,pos1); // this is horrendously easy
     drawLine(data,clr,pos1,pos2);
@@ -209,6 +225,28 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1
         }
     }
 }
+
+#pragma endregion
+
+#pragma region STRUCT
+
+// draws triangle wireframe with the struct
+void drawTriangleWireframeStruct(PixelData* data,Color clr,Triangle trig) {
+    uint16_t pos0[]={trig.pos[0],trig.pos[1]};
+    uint16_t pos1[]={trig.pos[2],trig.pos[3]};
+    uint16_t pos2[]={trig.pos[4],trig.pos[5]};
+    drawTriangleWireframe(data,clr,pos0,pos1,pos2); // yeah
+}
+
+// same as above but filled
+void drawTriangleFilledStruct(PixelData* data,Color clr,Triangle trig){
+    uint16_t pos0[]={trig.pos[0],trig.pos[1]};
+    uint16_t pos1[]={trig.pos[2],trig.pos[3]};
+    uint16_t pos2[]={trig.pos[4],trig.pos[5]};
+    drawTriangleFilled(data,clr,pos0,pos1,pos2);
+}
+
+#pragma endregion
 
 #pragma endregion
 

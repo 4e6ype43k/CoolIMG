@@ -44,6 +44,7 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 #ifndef CIMG_H
 #define CIMG_H
 
+// regions are comparable to C++ (ugh) namespaces but regions are VS (Code) exclusive (i think?) and are only visual
 #pragma region STRUCTS
 
 typedef struct Color {
