@@ -29,12 +29,12 @@ IN THE SOFTWARE.
 */
 
 #pragma once
+#ifndef CIMG_T_H
+#define CIMG_T_H
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#ifndef CIMG_T_H
-#define CIMG_T_H
 
 #ifdef EVIL //! DONT
 #pragma GCC poison printf
