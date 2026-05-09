@@ -194,4 +194,9 @@ uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
     }
 }
 
+// compares two colors and outputs 1 if they are the same
+uint8_t compareColors(Color clr1, Color clr2) {
+    return clr1.r==clr2.r&&clr1.g==clr2.g&&clr1.b==clr2.b&&clr1.a==clr2.a;
+}
+
 #endif
