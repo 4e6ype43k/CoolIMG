@@ -64,26 +64,40 @@ Color invertColor(Color clr){
 }
 
 // only used for the function below
-typedef enum COLOR_UINT_TYPE { // TODO add all orders
+typedef enum COLOR_UINT_TYPE {
     RGBA,
     RGAB, // so many spell checks
     RAGB, // 4!=4*3*2*1=... 24... damn
-    ARGB,
+    RBAG,
+    RBGA,
+    RABG,
 
     GBAR, // we (yes WE) are ALL using GBAR
     GBRA,
     GRBA,
+    GRAB,
+    GARB,
+    GABR, //iel, now dawns thy reckoning...
 
-    RBGA,
     BRGA,
-    
-    RBAG
+    BRAG,
+    BGAR,
+    BGRA,
+    BAGR,
+    BARG,
+
+    ARGB,
+    ARBG,
+    ABRG,
+    ABGR,
+    AGRB,
+    AGBR //! YES! THAT'S IT!
 } COLOR_UINT_TYPE; // no unnamed structs or enums
 
 // converts Color struct to uint32_t
 uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
-    switch (order) {
-        case ARGB:
+    switch (order) { //? ARE YOU SURE THIS GONNA WORK?
+        case ARGB: //! I HAVE NO IDEA!
         return clr.a*16777216+clr.r*65536+clr.g*256+clr.b; // why am i doing this
         break;
 
@@ -93,6 +107,18 @@ uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
 
         case RAGB:
         return clr.r*16777216+clr.a*65536+clr.g*256+clr.b;
+        break;
+
+        case RBAG:
+        return clr.r*16777216+clr.b*65536+clr.a*256+clr.g;
+        break;
+
+        case RBGA:
+        return clr.r*16777216+clr.b*65536+clr.g*256+clr.a;
+        break;
+
+        case RABG:
+        return clr.r*16777216+clr.a*65536+clr.b*256+clr.g;
         break;
 
         case GBAR:
@@ -107,20 +133,64 @@ uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
         return clr.g*16777216+clr.r*65536+clr.b*256+clr.a;
         break;
 
-        case RBGA:
-        return clr.r*16777216+clr.b*65536+clr.g*256+clr.a;
+        case GRAB:
+        return clr.g*16777216+clr.r*65536+clr.a*256+clr.b;
+        break;
+
+        case GARB:
+        return clr.g*16777216+clr.a*65536+clr.r*256+clr.b;
+        break;
+
+        case GABR:
+        return clr.g*16777216+clr.a*65536+clr.b*256+clr.r;
         break;
 
         case BRGA:
         return clr.b*16777216+clr.r*65536+clr.g*256+clr.a;
         break;
 
-        case RBAG:
-        return clr.r*16777216+clr.b*65536+clr.a*256+clr.g;
+        case BRAG:
+        return clr.b*16777216+clr.r*65536+clr.a*256+clr.g;
+        break;
+
+        case BGAR:
+        return clr.b*16777216+clr.g*65536+clr.a*256+clr.r;
+        break;
+
+        case BGRA:
+        return clr.b*16777216+clr.g*65536+clr.r*256+clr.a;
+        break;
+
+        case BAGR:
+        return clr.b*16777216+clr.a*65536+clr.g*256+clr.r;
+        break;
+
+        case BARG:
+        return clr.b*16777216+clr.a*65536+clr.r*256+clr.g;
+        break;
+
+        case ARBG:
+        return clr.a*16777216+clr.r*65536+clr.b*256+clr.g;
+        break;
+
+        case ABRG:
+        return clr.a*16777216+clr.b*65536+clr.r*256+clr.g;
+        break;
+
+        case ABGR:
+        return clr.a*16777216+clr.b*65536+clr.g*256+clr.r;
+        break;
+
+        case AGRB:
+        return clr.a*16777216+clr.g*65536+clr.r*256+clr.b;
+        break;
+
+        case AGBR:
+        return clr.a*16777216+clr.g*65536+clr.b*256+clr.r;
         break;
 
         default: // would return RGBA as default
-        return clr.r*16777216+clr.g*65536+clr.b*256+clr.a; // why am i doing this
+        return clr.r*16777216+clr.g*65536+clr.b*256+clr.a;
     }
 }
 
