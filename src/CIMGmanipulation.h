@@ -181,58 +181,23 @@ void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos0[2],uint16_t 
 
 // help me
 void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2],uint16_t pos2[2]) {
-    uint16_t centerX=ceil((double) (pos0[0]+pos1[0]+pos2[0])/3); // all points will slowly approach the center and on each iteration, will draw a wireframe
-    uint16_t centerY=ceil((double) (pos0[1]+pos1[1]+pos2[1])/3); // i know there are other methods to do this but they are kind of complicated
+    /*
+    * algorithm explanation:
 
-    int16_t x0add=pos0[0]<centerX ? 1:-1; // if x0<centerX, we will increase it, otherwise, we will decrease it
-    int16_t y0add=pos0[1]<centerY ? 1:-1;
-    int16_t x1add=pos1[0]<centerX ? 1:-1;
-    int16_t y1add=pos1[1]<centerY ? 1:-1;
-    int16_t x2add=pos2[0]<centerX ? 1:-1;
-    int16_t y2add=pos2[1]<centerY ? 1:-1;
+    - start at lowest y
+    - find minX and maxX for the y via the gradients of the lines adjacent to the point with lowest y
+    - when you get to midY, find the two xs with the gradients of the opposite line and the lowest line (if that makes any sense)
+    - for each change in y, draw a line between (minX,y) and (maxX,y)
 
-    uint8_t x0stop=0; // to check if x0==centerX
-    uint8_t y0stop=0;
-    uint8_t x1stop=0;
-    uint8_t y1stop=0;
-    uint8_t x2stop=0;
-    uint8_t y2stop=0;
+    */
 
-    while (!(x0stop&&y0stop&&x1stop&&y1stop&&x2stop&&y2stop)) { // why
-        drawTriangleWireframe(data,clr,pos0,pos1,pos2); // one of many
-        if (pos0[0]==centerX) { // wow
-            x0stop=1;
-        } else {
-            pos0[0]+=x0add;
-        }
-        if (pos0[1]==centerY) {
-            y0stop=1;
-        } else {
-            pos0[1]+=y0add;
-        }
+    // great, but now we need to implement it...
 
-        if (pos1[0]==centerX) {
-            x1stop=1;
-        } else {
-            pos1[0]+=x1add;
-        }
-        if (pos1[1]==centerY) {
-            y1stop=1;
-        } else {
-            pos1[1]+=y1add;
-        }
+    uint16_t minYpos[2]; // point with lowest y
+    uint16_t midYpos[2];
+    uint16_t maxYpos[2];
 
-        if (pos2[0]==centerX) {
-            x2stop=1;
-        } else {
-            pos2[0]+=x2add;
-        }
-        if (pos2[1]==centerY) {
-            y2stop=1;
-        } else {
-            pos2[1]+=y2add;
-        }
-    }
+    if (pos0[1]==pos1[1]||pos2[1]==pos1[1]||pos0[1]==pos2[1]) return; // TODO implement support for flat triangles
 }
 
 // draws a rect outline with given xywh
