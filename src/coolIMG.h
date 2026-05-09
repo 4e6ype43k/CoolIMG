@@ -82,7 +82,7 @@ Color mixColors(Color base,Color add) {
 }
 
 // stores the actual data from/for a CIMG file
-typedef struct Color {
+typedef struct PixelData { // uh oh, it seems like having any of the two different WILL give an error
     uint16_t width;
     uint16_t height;
     Color* pixels; //? color is stored as RGBA in the file

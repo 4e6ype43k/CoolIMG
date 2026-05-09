@@ -49,5 +49,6 @@ typedef uint32_t u32;
 typedef Color cl;
 typedef PixelData PD;
 typedef Triangle tri;
+typedef Rectangle rect;
 
 #endif

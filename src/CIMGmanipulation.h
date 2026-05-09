@@ -111,6 +111,14 @@ typedef struct Triangle {
     uint16_t pos[6];
 } Triangle;
 
+// stores x,y,w,h in ONE struct! so useful!
+typedef struct Rectangle {
+    uint16_t x;
+    uint16_t y;
+    uint16_t w;
+    uint16_t h;
+} Rectangle;
+
 // TODO? add more
 
 #pragma endregion
@@ -121,6 +129,7 @@ typedef struct Triangle {
 
 // draws a line between two points
 // TODO add width
+// TODO it stopped working again...
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
     if (pos0[1]!=pos1[1]) { // checks if y isn't the same
         if (pos0[1]>pos1[1]) { // going over the height first
@@ -226,6 +235,20 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1
     }
 }
 
+// draws a rect outline with given xywh
+// TODO you know what to add
+void drawRectWireframe(PixelData* data,Color clr,uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    uint16_t pos0[]={x,y}; // first pos
+    uint16_t pos1[]={x+w-1,y}; //? if w or h == data->w or h then ut will just be bigger than it by a pixel
+    uint16_t pos2[]={x+w-1,y+h-1};
+    uint16_t pos3[]={x,y+h-1};
+
+    drawLine(data,clr,pos0,pos1);
+    drawLine(data,clr,pos1,pos2);
+    drawLine(data,clr,pos2,pos3);
+    drawLine(data,clr,pos3,pos0);
+}
+
 #pragma endregion
 
 #pragma region STRUCT
@@ -244,6 +267,11 @@ void drawTriangleFilledStruct(PixelData* data,Color clr,Triangle trig){
     uint16_t pos1[]={trig.pos[2],trig.pos[3]};
     uint16_t pos2[]={trig.pos[4],trig.pos[5]};
     drawTriangleFilled(data,clr,pos0,pos1,pos2);
+}
+
+// structs
+void drawRectWireframeStruct(PixelData* data, Color clr, Rectangle rct) {
+    drawRectWireframe(data,clr,rct.x,rct.y,rct.w,rct.h);
 }
 
 #pragma endregion
