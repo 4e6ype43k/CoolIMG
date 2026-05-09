@@ -154,7 +154,7 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
             double gradient=(double) (pos0[1]-pos1[1])/(pos0[0]-pos1[0]); // gradient relative to x
             int16_t offset=pos0[1]-pos0[0]*gradient; // uhhhh™
 
-            for (uint16_t x=pos1[1];x<=pos0[1];x++) {
+            for (uint16_t x=pos1[0];x<=pos0[0];x++) {
                 uint16_t y=ceil(x*gradient+offset);
                 drawPoint(data,clr,(uint16_t[2]) {x,y});
             }
