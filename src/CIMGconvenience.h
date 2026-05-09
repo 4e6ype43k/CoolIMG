@@ -42,6 +42,7 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint16_t ui16_2[2]; // useful when converting to coord type (ie as in (ui16_2) {x,y})
 typedef uint16_t u162[2]; // even shorter
+typedef uint16_t u1632[3][2]; // triangle
 typedef int16_t i16;
 
 typedef uint32_t u32;

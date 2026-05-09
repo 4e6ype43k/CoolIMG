@@ -91,7 +91,7 @@ typedef struct PixelData { // uh oh, it seems like having any of the two differe
 // the array doesn't magically allocate memory in a struct because the w and h aren't always initiated
 void allocPixelMemory(PixelData* data) {
     data->pixels=(Color*) calloc(data->width*data->height,4); //? the 4 is the bytes required to store a color
-} //? i use calloc instead of malloc so that the script won't crash when there is an undefined color (which there won't be if i calloc)
+} //? use calloc instead of malloc so that the script won't crash when there is an undefined color (which there won't be if i calloc)
 
 // frees memory after you're done with the pixel data
 void freePixelMemory(PixelData* data) {
