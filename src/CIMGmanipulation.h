@@ -249,6 +249,13 @@ void drawRectWireframe(PixelData* data,Color clr,uint16_t x, uint16_t y, uint16_
     drawLine(data,clr,pos3,pos0);
 }
 
+// its literally in the name
+void drawRectFilled(PixelData* data,Color clr,uint16_t x,uint16_t y,uint16_t w,uint16_t h) {
+    for (uint16_t x1=x; x1<w+x; x1++) { // not loops again
+        drawLine(data,clr,(uint16_t[2]) {x1,y},(uint16_t[2]) {x1,y+h});
+    }
+}
+
 #pragma endregion
 
 #pragma region STRUCT
@@ -272,6 +279,11 @@ void drawTriangleFilledStruct(PixelData* data,Color clr,Triangle trig){
 // structs
 void drawRectWireframeStruct(PixelData* data, Color clr, Rectangle rct) {
     drawRectWireframe(data,clr,rct.x,rct.y,rct.w,rct.h);
+}
+
+// i think i should top commenting for now
+void drawRectFilledStruct(PixelData* data, Color clr, Rectangle rct) {
+    drawRectFilled(data,clr,rct.x,rct.y,rct.w,rct.h);
 }
 
 #pragma endregion
