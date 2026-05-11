@@ -119,6 +119,11 @@ typedef struct Rectangle {
     uint16_t h;
 } Rectangle;
 
+// stores positions of 4 points
+typedef struct Quadrilateral {
+    uint16_t pos[8];
+} Quadrilateral;
+
 // TODO? add more
 
 #pragma endregion
@@ -269,6 +274,18 @@ void drawRectFilled(PixelData* data,Color clr,uint16_t x,uint16_t y,uint16_t w,u
     }
 }
 
+// TODO do i even need to say it?
+void drawQuadrilateralWireframe(PixelData* data,Color clr, uint16_t pos[4][2]) {
+    drawLine(data,clr,pos[0],pos[1]);
+    drawLine(data,clr,pos[2],pos[1]);
+    drawLine(data,clr,pos[3],pos[2]);
+    drawLine(data,clr,pos[0],pos[3]);
+}
+
+void drawQuadrilateralFilled(PixelData* data,Color clr,uint16_t pos[4][2]) {
+    // todo
+}
+
 #pragma endregion
 
 #pragma region STRUCT
@@ -293,6 +310,17 @@ void drawRectWireframeStruct(PixelData* data, Color clr, Rectangle rct) {
 // i think i should top commenting for now
 void drawRectFilledStruct(PixelData* data, Color clr, Rectangle rct) {
     drawRectFilled(data,clr,rct.x,rct.y,rct.w,rct.h);
+}
+
+void drawQuadrilateralWireframeStruct(PixelData* data, Color clr, Quadrilateral qd) {
+    uint16_t pos[4][2]={{qd.pos[0],qd.pos[1]},{qd.pos[2],qd.pos[3]},{qd.pos[4],qd.pos[5]},{qd.pos[6],qd.pos[7]}};
+    drawQuadrilateralWireframe(data,clr,pos);
+}
+
+//! ORIGINAL FUNCTION IS NOT YET FINISHED
+void drawQuadrilateralFilledStruct(PixelData* data, Color clr, Quadrilateral qd) {
+    uint16_t pos[4][2]={{qd.pos[0],qd.pos[1]},{qd.pos[2],qd.pos[3]},{qd.pos[4],qd.pos[5]},{qd.pos[6],qd.pos[7]}};
+    drawQuadrilateralFilled(data,clr,pos);
 }
 
 #pragma endregion
