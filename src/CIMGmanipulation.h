@@ -129,7 +129,6 @@ typedef struct Rectangle {
 
 // draws a line between two points
 // TODO add width
-// TODO it stopped working again...
 void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
     if (pos0[1]!=pos1[1]) { // checks if y isn't the same
         if (pos0[1]>pos1[1]) { // going over the height first
@@ -179,59 +178,73 @@ void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos[3][2]) {
     drawLine(data,clr,pos[0],pos[2]);
 }
 
-// help me
-void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos[3][2]) {
-    uint16_t centerX=floor((double) (pos[0][0]+pos[1][0]+pos[2][0])/3); // all points will slowly approach the center and on each iteration, will draw a wireframe
-    uint16_t centerY=floor((double) (pos[0][1]+pos[1][1]+pos[2][1])/3); // i know there are other methods to do this but they are kind of complicated
+// uses a new triangle draw algorithm cos the last one SUCKED
+void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos[3][2]){
+    /*
+    * new algorithm in pseudocode:
 
-    int16_t x0add=pos[0][0]<centerX ? 1:-1; // if x0<centerX, we will increase it, otherwise, we will decrease it
-    int16_t y0add=pos[0][1]<centerY ? 1:-1;
-    int16_t x1add=pos[1][0]<centerX ? 1:-1;
-    int16_t y1add=pos[1][1]<centerY ? 1:-1;
-    int16_t x2add=pos[2][0]<centerX ? 1:-1;
-    int16_t y2add=pos[2][1]<centerY ? 1:-1;
+    find min, mid and max ys
 
-    uint8_t x0stop=0; // to check if x0==centerX
-    uint8_t y0stop=0;
-    uint8_t x1stop=0;
-    uint8_t y1stop=0;
-    uint8_t x2stop=0;
-    uint8_t y2stop=0;
+    find the gradients of all lines
 
-    while (!(x0stop&&y0stop&&x1stop&&y1stop&&x2stop&&y2stop)) { // why
-        drawTriangleWireframe(data,clr,pos); // one of many
-        if (pos[0][0]==centerX) { // wow
-            x0stop=1;
+    for y between minY and maxY
+        find minX and maxX
+
+        draw a line between (y,minX) and (y,maxX) on data of color clr
+    */
+
+    // 1. find min, mid and max ys
+
+    uint16_t minY=0; // first, we will store indices of the ys
+    uint16_t maxY=0;
+
+    for (uint8_t x=0; x<3; x++) { // comparison.
+        if (pos[x][1]<pos[minY][1]) minY=x;
+        if (pos[x][1]>pos[minY][1]) maxY=x;
+    }
+
+    uint16_t midY=3-minY-maxY; // will work in basically every case (except where all ys are the same)
+
+    // 2. find the gradients of all lines
+
+    int16_t minMidGradient;
+    int16_t midMaxGradient;
+    int16_t minMaxGradient;
+
+    if (pos[minY][1]-pos[midY][1]==0) minMidGradient=0;
+    else minMidGradient=ceil((pos[minY][0]-pos[midY][0])/(pos[minY][1]-pos[midY][1])); // gradient of line between the points with lowest and middle ys
+
+    if (pos[midY][1]-pos[maxY][1]==0) midMaxGradient=0;
+    else midMaxGradient=ceil((pos[midY][0]-pos[maxY][0])/(pos[midY][1]-pos[maxY][1]));
+
+    if (pos[minY][1]-pos[maxY][1]==0) minMaxGradient=0; //* You found the gradients!
+    else minMaxGradient=ceil((pos[minY][0]-pos[maxY][0])/(pos[minY][1]-pos[maxY][1])); //! They are inverse gradients
+
+    int16_t minMidOffset=pos[minY][0]-pos[minY][1]*minMidGradient; // offset
+    int16_t midMaxOffset=pos[midY][0]-pos[midY][1]*midMaxGradient;
+    int16_t minMaxOffset=pos[maxY][0]-pos[maxY][1]*minMaxGradient;
+
+    minY=pos[minY][1]; // now we can make it actual y
+    midY=pos[midY][1];
+    maxY=pos[maxY][1];
+
+    // 3. for y between minY and maxY
+    for (uint16_t y=minY; y<=maxY; y++) {
+        
+        // 3.1. find minX and maxX
+        uint16_t minX;
+        uint16_t maxX;
+
+        if (y>=midY) {
+            minX=minMaxGradient*y+minMaxOffset; // yes
+            maxX=midMaxGradient*y+midMaxOffset;
         } else {
-            pos[0][0]+=x0add;
-        }
-        if (pos[0][1]==centerY) {
-            y0stop=1;
-        } else {
-            pos[0][1]+=y0add;
+            minX=minMidGradient*y+minMidOffset;
+            maxX=minMaxGradient*y+minMaxOffset;
         }
 
-        if (pos[1][0]==centerX) {
-            x1stop=1;
-        } else {
-            pos[1][0]+=x1add;
-        }
-        if (pos[1][1]==centerY) {
-            y1stop=1;
-        } else {
-            pos[1][1]+=y1add;
-        }
-
-        if (pos[2][0]==centerX) {
-            x2stop=1;
-        } else {
-            pos[2][0]+=x2add;
-        }
-        if (pos[2][1]==centerY) {
-            y2stop=1;
-        } else {
-            pos[2][1]+=y2add;
-        }
+        // 3.2. draw a line between (y,minX) and (y,maxX) on data of color clr
+        drawLine(data,clr,(uint16_t[2]) {y,minX},(uint16_t[2]) {y,maxX}); // this isn't going to work
     }
 }
 
