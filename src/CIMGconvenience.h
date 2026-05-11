@@ -43,7 +43,6 @@ typedef uint16_t u16;
 typedef uint16_t ui16_2[2]; // useful when converting to coord type (ie as in (ui16_2) {x,y})
 typedef uint16_t u162[2]; // even shorter
 typedef uint16_t u1632[3][2]; // triangle
-typedef uint16_t u1642[4][2]; // quad
 typedef int16_t i16;
 
 typedef uint32_t u32;
@@ -52,6 +51,5 @@ typedef Color cl;
 typedef PixelData PD;
 typedef Triangle tri;
 typedef Rectangle rect;
-typedef Quadrilateral quad;
 
 #endif
