@@ -194,6 +194,114 @@ uint32_t colorToInt(Color clr,COLOR_UINT_TYPE order){
     }
 }
 
+// converts uint32_t to Color
+Color intToColor(uint32_t intColor, COLOR_UINT_TYPE order) {
+    uint32_t remainder=intColor%16777216;
+    uint8_t r=(intColor-remainder)/16777216; // the color r channel if it was rgba
+    remainder%=65536;
+    uint8_t g=(intColor-remainder)/65536;
+    remainder%=256;
+    uint8_t b=(intColor-remainder)/256;
+    uint8_t a=intColor;
+	
+    switch(order) {
+        case ARGB: 
+        return (Color) {a,r,g,b};
+        break;
+
+        case RGAB:
+        return (Color) {r,g,a,b};
+        break;
+
+        case RAGB:
+        return (Color) {r,a,g,b};
+        break;
+
+        case RBAG:
+        return (Color) {r,b,a,g};
+        break;
+
+        case RBGA:
+        return (Color) {r,b,g,a};
+        break;
+
+        case RABG:
+        return (Color) {r,a,b,g};
+        break;
+
+        case GBAR:
+        return (Color) {g,b,a,r};
+        break;
+
+        case GBRA:
+        return (Color) {g,b,r,a};
+        break;
+
+        case GRBA:
+        return (Color) {g,r,b,a};
+        break;
+
+        case GRAB:
+        return (Color) {g,r,a,b};
+        break;
+
+        case GARB:
+        return (Color) {g,a,r,b};
+        break;
+
+        case GABR:
+        return (Color) {g,a,b,r};
+        break;
+
+        case BRGA:
+        return (Color) {b,r,g,a};
+        break;
+
+        case BRAG:
+        return (Color) {b,r,a,g};
+        break;
+
+        case BGAR:
+        return (Color) {b,g,a,r};
+        break;
+
+        case BGRA:
+        return (Color) {b,g,r,a};
+        break;
+
+        case BAGR:
+        return (Color) {b,a,g,r};
+        break;
+
+        case BARG:
+        return (Color) {b,a,r,g};
+        break;
+
+        case ARBG:
+        return (Color) {a,r,b,g};
+        break;
+
+        case ABRG:
+        return (Color) {a,b,r,g};
+        break;
+
+        case ABGR:
+        return (Color) {a,b,g,r};
+        break;
+
+        case AGRB:
+        return (Color) {a,g,r,b};
+        break;
+
+        case AGBR:
+        return (Color) {a,g,b,r};
+        break;
+
+        default: // would return RGBA as default
+        return (Color) {r,g,b,a};
+    }
+}
+
 // compares two colors and outputs 1 if they are the same
 uint8_t compareColors(Color clr1, Color clr2) {
     return clr1.r==clr2.r&&clr1.g==clr2.g&&clr1.b==clr2.b&&clr1.a==clr2.a;
