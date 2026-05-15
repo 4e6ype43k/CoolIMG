@@ -302,14 +302,15 @@ void drawRectFilledStruct(PixelData* data, Color clr, Rectangle rct) {
 #pragma region SIZE_MANIPULATION
 
 // scales the dimensions of the struct by the scale factor (stretches pixels too) and returns new PD
-//! DOESN'T SUPPORT FLOAT SCALE FACTORS (yet)
-PixelData scaleBy(PixelData data, uint16_t scale[2]) {
-    PixelData newData={data.width*scale[0],data.height*scale[1],NULL};
+PixelData scaleBy(PixelData data, float scale[2]) {
+    PixelData newData={ceil(data.width*scale[0]),ceil(data.height*scale[1]),NULL};
     allocPixelMemory(&newData);
     for (uint16_t x=0;x<newData.width;x++) { // goes over the width of the new struct
-        uint16_t actualX=(x-(x%scale[0]))/scale[0]; // the x of the input PD
+        uint16_t actualX=floor(x/scale[0]); // the x of the input PD
+        if (actualX>=data.width) actualX=data.width-1;
         for (uint16_t y=0;y<newData.height;y++) { // the height
-            uint16_t actualY=(y-(y%scale[1]))/scale[1]; // same but for y
+            uint16_t actualY=floor(y/scale[1]); // same but for y
+            if (actualY>=data.height) actualY=data.height-1;
             drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {actualX,actualY})],(uint16_t[2]) {x,y}); // theres no way this actually works
         }
     }
@@ -317,10 +318,8 @@ PixelData scaleBy(PixelData data, uint16_t scale[2]) {
 }
 
 // same as scaleBy() but scales the PD to the dimensions given
-//! MIGHT LOOK WONKY COS, AGAIN, scaleBY() DOESN'T SUPPORT FLOAT SCALE FACTORS
-//! SETTING DIMENSIONS LESS THAN THOSE OF data WILL RETURN A 0 SIZE PD (same reason)
 PixelData scaleTo(PixelData data, uint16_t dimensions[2]) {
-    uint16_t scale[2]={ceil(dimensions[0]/data.width),ceil(dimensions[1]/data.height)}; // finding out the scale factor
+    float scale[2]={dimensions[0]/data.width,dimensions[1]/data.height}; // finding out the scale factor
     return scaleBy(data,scale); // "yeah, i'll just make it a bit different"
 }
 
