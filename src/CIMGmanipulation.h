@@ -54,6 +54,50 @@ void fill(PixelData* data,Color clr) {
     }
 }
 
+// replaces all instances of clr0 with clr1
+void replaceColor(PixelData* data,Color clr0,Color clr1) {
+    for (uint16_t x=0;x<data->width;x++) {
+        for (uint16_t y=0;y<data->height;y++) {
+            // HERE IT COMES!
+            if (data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].a==clr0.a){
+                drawPoint(data,clr1,(uint16_t[2]) {x,y});
+            }
+        }
+    }
+}
+
+// replaceColor() but for an area
+void replaceColorArea(PixelData* data,Color clr0,Color clr1, uint16_t pos0[2], uint16_t pos1[2]) {
+    uint16_t minX; // reduce, reuse, recycle
+    uint16_t maxX;
+    uint16_t maxY;
+    uint16_t minY;
+
+    if (pos0[0]>pos1[0]) {
+        maxX=pos0[0];
+        minX=pos1[0];
+    } else {
+        maxX=pos1[0];
+        minX=pos0[0];
+    }
+
+    if (pos0[1]>pos1[1]) {
+        maxY=pos0[1];
+        minY=pos1[1];
+    } else {
+        maxY=pos1[1];
+        minY=pos0[1];
+    }
+
+    for (uint16_t x=minX;x<=maxX;x++) {
+        for (uint16_t y=minY;y<=maxY;y++) { // hope this works
+            if (data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].a==clr0.a){
+                drawPoint(data,clr1,(uint16_t[2]) {x,y});
+            }
+        }
+    }
+}
+
 #pragma endregion
 
 #pragma region INVERT
