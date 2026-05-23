@@ -124,18 +124,16 @@ PixelData copyData(PixelData data){
 
 #pragma region FILE_IO
 
-char CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
+int8_t CIMGheader[]={0x43,0x49,0x4d,0x47,0x0d,0x0a,0x1a,0x0a}; // pls dont modify this pls pls
 
-//! the function below will give a segmentation fault if the path has no file
 // checks first 8 bytes of the file to check if they match the CIMG header. path could also be an absolute path
-int isCIMG(char* path) {
-    FILE* pFile;
-    pFile=fopen(path,"r");
+// returns 0 if file isn't CIMG, 1 if it is and -1 if file doesn't exist
+int8_t isCIMG(int8_t* path) {
+    int8_t header[8];
+    int8_t fileFound=readFileHeader(header,path); 
+    if (fileFound) return -1; // above func returns 1 if the file was read successfully
 
-    char header[8];
-    fread(header,1,8,pFile); 
-
-    int count=0;
+    int32_t count=0;
     for (uint8_t index=0; index<8; index++) { // compares the two because strcmp() doesn't want to do its allocated job
         if (header[index]==CIMGheader[index]) {
             count++; // adds 1 to counter for each match
@@ -145,8 +143,10 @@ int isCIMG(char* path) {
     return count==8;
 }
 
-PixelData decodeCIMGfile(char* path) {
-    if (isCIMG(path)) {
+// returns 0 size PD if file wasn't CIMG
+PixelData decodeCIMGfile(int8_t* path) {
+    uint8_t cimgCheck=isCIMG(path);
+    if (cimgCheck==1) {
         FILE* pFile; // you know the drill
         pFile=fopen(path,"rb"); // reading the BINARY
         uint16_t sizeData[6]; // there are two axis of size (both take up 2 bytes each) + the header (8 bytes/2 bytes=4)
@@ -166,16 +166,16 @@ PixelData decodeCIMGfile(char* path) {
         }
 
         return data;
-    }
+    } else return (PixelData) {0,0,NULL};
 }
 
 // encodes pixel data into a CIMG file
-void encodeCIMGfile(PixelData data,char* path) {
+void encodeCIMGfile(PixelData data,int8_t* path) {
     FILE* pFile;
     pFile=fopen(path,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
     uint32_t magicNumber=data.width*data.height*4+12;  // same as in decodeCIMGfile()
 
-    char rawData[magicNumber]; // stores all the data in a 1D byte array
+    int8_t rawData[magicNumber]; // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
     charVector2 width=int16ToChar2(data.width);
     charVector2 height=int16ToChar2(data.height);
