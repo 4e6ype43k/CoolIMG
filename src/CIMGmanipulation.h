@@ -149,24 +149,23 @@ void invertFill(PixelData* data){
 
 #pragma region SHAPE_DRAW
 
-// draws a line between two points
-// TODO add width
-void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
+// draws a line with a width of 1
+void drawLineWidth1(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
     if (pos0[1]!=pos1[1]) { // checks if y isn't the same
         if (pos0[1]>pos1[1]) { // going over the height first
-            double gradientInverse=(double) (pos0[0]-pos1[0])/(pos0[1]-pos1[1]); // gradient relative to y
-            int16_t offset=pos0[0]-pos0[1]*gradientInverse; // uhhhh
+                double gradientInverse=(double) (pos0[0]-pos1[0])/(pos0[1]-pos1[1]); // gradient relative to y
+                int16_t offset=pos0[0]-pos0[1]*gradientInverse; // uhhhh
 
-            for (uint16_t y=pos1[1];y<=pos0[1];y++) { // trust the process
-                uint16_t x=ceil(y*gradientInverse+offset); //? why ceil? because I WANT IT, I WANT IT QUITE A LOT! I'M IN IT COS I CAN BE, YOU CAN'T TELL ME THAT I'M NOT!
-                drawPoint(data,clr,(uint16_t[2]) {x,y});
-            }
+                for (int16_t y=pos1[1];y<=pos0[1];y++) { // trust the process
+                    int16_t x=ceil(y*gradientInverse+offset); //? why ceil? because I WANT IT, I WANT IT QUITE A LOT! I'M IN IT COS I CAN BE, YOU CAN'T TELL ME THAT I'M NOT!
+                    drawPoint(data,clr,(uint16_t[2]) {x,y});
+                }
         } else { // through the mirror
             double gradientInverse=(double) (pos1[0]-pos0[0])/(pos1[1]-pos0[1]);
             int16_t offset=pos0[0]-pos0[1]*gradientInverse;
 
-            for (uint16_t y=pos0[1];y<=pos1[1];y++) {
-                uint16_t x=ceil(y*gradientInverse+offset);
+            for (int16_t y=pos0[1];y<=pos1[1];y++) {
+                int16_t x=ceil(y*gradientInverse+offset);
                 drawPoint(data,clr,(uint16_t[2]) {x,y});
             }
         }
@@ -175,29 +174,41 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2]) {
             double gradient=(double) (pos0[1]-pos1[1])/(pos0[0]-pos1[0]); // gradient relative to x
             int16_t offset=pos0[1]-pos0[0]*gradient; // uhhhh™
 
-            for (uint16_t x=pos1[0];x<=pos0[0];x++) {
-                uint16_t y=ceil(x*gradient+offset);
+            for (int16_t x=pos1[0];x<=pos0[0];x++) {
+                int16_t y=ceil(x*gradient+offset);
                 drawPoint(data,clr,(uint16_t[2]) {x,y});
             }
         } else {
             double gradient=(double) (pos1[1]-pos0[1])/(pos1[0]-pos0[0]);
             int16_t offset=pos0[1]-pos0[0]*gradient;
 
-            for (uint16_t x=pos0[0];x<=pos1[0];x++) {
-                uint16_t y=ceil(x*gradient+offset);
+            for (int16_t x=pos0[0];x<=pos1[0];x++) {
+                int16_t y=ceil(x*gradient+offset);
                 drawPoint(data,clr,(uint16_t[2]) {x,y});
             }
         }
     }
-} // theres no way this worked first try
-// ^ not anymore tho (well, not for lines where gradient!=1)
+}
+
+// draws a line between two points. now with width!1!!!
+void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2],uint16_t width) {
+    int16_t lineMin=width%2!=0?-(width-1)/2:-width/2; // minimum offset for line based on width (if that makes sense)
+    int16_t lineMax=width%2!=0?(width-1)/2+1:width/2;
+
+    for (int16_t x=lineMin; x<lineMax; x++) {
+        uint16_t y0=pos0[1]+x<0?pos0[1]:pos0[1]+x; //? if the result<0, it will be gigantic if unsigned
+        uint16_t y1=pos1[1]+x<0?pos1[1]:pos1[1]+x;
+        printf("%d,%d\n",y0,y1);
+        drawLineWidth1(data,clr,(uint16_t[2]) {pos0[0],y0},(uint16_t[2]) {pos1[0],y1});
+    }
+}
 
 // draws something but i cant really figure out what exactly
 // TODO add width
-void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos[3][2]) {
-    drawLine(data,clr,pos[0],pos[1]); // this is horrendously easy
-    drawLine(data,clr,pos[1],pos[2]);
-    drawLine(data,clr,pos[0],pos[2]);
+void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos[3][2],uint16_t width) {
+    drawLine(data,clr,pos[0],pos[1],width); // this is horrendously easy
+    drawLine(data,clr,pos[1],pos[2],width);
+    drawLine(data,clr,pos[0],pos[2],width);
 }
 
 // uses a new triangle draw algorithm cos the last one SUCKED
@@ -266,28 +277,28 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos[3][2]){
         }
 
         // 3.2. draw a line between (y,minX) and (y,maxX) on data of color clr
-        drawLine(data,clr,(uint16_t[2]) {y,minX},(uint16_t[2]) {y,maxX}); // this isn't going to work
+        drawLine(data,clr,(uint16_t[2]) {y,minX},(uint16_t[2]) {y,maxX},1); // this isn't going to work
     }
 }
 
 // draws a rect outline with given xywh
 // TODO you know what to add
-void drawRectWireframe(PixelData* data,Color clr,uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+void drawRectWireframe(PixelData* data,Color clr,uint16_t x, uint16_t y, uint16_t w, uint16_t h,uint16_t width) {
     uint16_t pos0[]={x,y}; // first pos
     uint16_t pos1[]={x+w-1,y}; //? if w or h == data->w or h then ut will just be bigger than it by a pixel
     uint16_t pos2[]={x+w-1,y+h-1};
     uint16_t pos3[]={x,y+h-1};
 
-    drawLine(data,clr,pos0,pos1);
-    drawLine(data,clr,pos1,pos2);
-    drawLine(data,clr,pos2,pos3);
-    drawLine(data,clr,pos3,pos0);
+    drawLine(data,clr,pos0,pos1,width);
+    drawLine(data,clr,pos1,pos2,width);
+    drawLine(data,clr,pos2,pos3,width);
+    drawLine(data,clr,pos3,pos0,width);
 }
 
 // its literally in the name
 void drawRectFilled(PixelData* data,Color clr,uint16_t x,uint16_t y,uint16_t w,uint16_t h) {
     for (uint16_t x1=x; x1<w+x; x1++) { // not loops again
-        drawLine(data,clr,(uint16_t[2]) {x1,y},(uint16_t[2]) {x1,y+h});
+        drawLine(data,clr,(uint16_t[2]) {x1,y},(uint16_t[2]) {x1,y+h},1);
     }
 }
 
