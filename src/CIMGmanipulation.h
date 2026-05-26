@@ -198,7 +198,6 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2],uint16
     for (int16_t x=lineMin; x<lineMax; x++) {
         uint16_t y0=pos0[1]+x<0?pos0[1]:pos0[1]+x; //? if the result<0, it will be gigantic if unsigned
         uint16_t y1=pos1[1]+x<0?pos1[1]:pos1[1]+x;
-        printf("%d,%d\n",y0,y1);
         drawLineWidth1(data,clr,(uint16_t[2]) {pos0[0],y0},(uint16_t[2]) {pos1[0],y1});
     }
 }
