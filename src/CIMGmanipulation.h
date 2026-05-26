@@ -147,29 +147,7 @@ void invertFill(PixelData* data){
 
 #pragma endregion
 
-#pragma region SHAPE_STRUCTS
-
-// could be useful in some very niche situations
-// order is x0,y0,x1...y2
-typedef struct Triangle {
-    uint16_t pos[6];
-} Triangle;
-
-// stores x,y,w,h in ONE struct! so useful!
-typedef struct Rectangle {
-    uint16_t x;
-    uint16_t y;
-    uint16_t w;
-    uint16_t h;
-} Rectangle;
-
-// TODO? add more
-
-#pragma endregion
-
 #pragma region SHAPE_DRAW
-
-#pragma region NO_STRUCT
 
 // draws a line between two points
 // TODO add width
@@ -312,34 +290,6 @@ void drawRectFilled(PixelData* data,Color clr,uint16_t x,uint16_t y,uint16_t w,u
         drawLine(data,clr,(uint16_t[2]) {x1,y},(uint16_t[2]) {x1,y+h});
     }
 }
-
-#pragma endregion
-
-#pragma region STRUCT
-
-// draws triangle wireframe with the struct
-void drawTriangleWireframeStruct(PixelData* data,Color clr,Triangle trig) {
-    uint16_t pos[3][2]={{trig.pos[0],trig.pos[1]},{trig.pos[2],trig.pos[3]},{trig.pos[4],trig.pos[5]}};
-    drawTriangleWireframe(data,clr,pos); // yeah
-}
-
-// same as above but filled
-void drawTriangleFilledStruct(PixelData* data,Color clr,Triangle trig){
-    uint16_t pos[3][2]={{trig.pos[0],trig.pos[1]},{trig.pos[2],trig.pos[3]},{trig.pos[4],trig.pos[5]}};
-    drawTriangleFilled(data,clr,pos);
-}
-
-// structs
-void drawRectWireframeStruct(PixelData* data, Color clr, Rectangle rct) {
-    drawRectWireframe(data,clr,rct.x,rct.y,rct.w,rct.h);
-}
-
-// i think i should top commenting for now
-void drawRectFilledStruct(PixelData* data, Color clr, Rectangle rct) {
-    drawRectFilled(data,clr,rct.x,rct.y,rct.w,rct.h);
-}
-
-#pragma endregion
 
 #pragma endregion
 
