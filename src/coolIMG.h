@@ -153,7 +153,10 @@ PixelData decodeCIMGfile(int8_t* path) {
         fread(sizeData,2,6,pFile);
 
         uint16_t width=sizeData[4]/256; // width is stored first
+        width+=(sizeData[4]-width*256)*256; // more magic
         uint16_t height=sizeData[5]/256;
+        height+=(sizeData[5]-height*256)*256;
+        
         PixelData data={width,height,NULL}; // null because the third arg will be an array on the next line
         allocPixelMemory(&data);
         uint32_t magicNumber=width*height*4+12; // 12 bytes for header+dimensions (2 for each) and 4 for each pixel
