@@ -100,22 +100,22 @@ void freePixelMemory(PixelData* data) {
 
 // converts a position on a PD and returns an index matching the pos
 // returns 0 if the pos is out of range
-uint32_t posToIndex(PixelData data,uint16_t pos[2]) {
-    if (pos[0]<data.width&&pos[1]<data.height) { // index 0 is x, 1 is y
-        return data.width*pos[1]+pos[0]; // there is y lots of width (as the colors are stored in a 1d array from (0,0) to max pos) and there is x
+uint32_t posToIndex(PixelData* data,uint16_t pos[2]) {
+    if (pos[0]<data->width&&pos[1]<data->height) { // index 0 is x, 1 is y
+        return data->width*pos[1]+pos[0]; // there is y lots of width (as the colors are stored in a 1d array from (0,0) to max pos) and there is x
     } // sounds counter-intuitive but it works
 }
 
 // if you just assign 1 PD to another, they will point to the same array, so changing one will change the other
 // this is where this function comes in
-PixelData copyData(PixelData data){
-    uint16_t width=data.width; // we will reference it quite a few times
-    uint16_t height=data.height;
+PixelData copyData(PixelData* data){
+    uint16_t width=data->width; // we will reference it quite a few times
+    uint16_t height=data->height;
     PixelData newData={width,height,NULL}; // we do NOT assign pixels to point to the same array
     allocPixelMemory(&newData); // nearly forgot this
 
     for (uint32_t x=0; x<width*height; x++) {
-        newData.pixels[x]=data.pixels[x]; // going over each pixel and yeah
+        newData.pixels[x]=data->pixels[x]; // going over each pixel and yeah
     }
     return newData;
 }
@@ -173,15 +173,15 @@ PixelData decodeCIMGfile(int8_t* path) {
 }
 
 // encodes pixel data into a CIMG file
-void encodeCIMGfile(PixelData data,int8_t* path) {
+void encodeCIMGfile(PixelData* data,int8_t* path) {
     FILE* pFile;
     pFile=fopen(path,"wb"); // if the file doesn't exist in the dir, it'll create itself (i think)
-    uint32_t magicNumber=data.width*data.height*4+12;  // same as in decodeCIMGfile()
+    uint32_t magicNumber=data->width*data->height*4+12;  // same as in decodeCIMGfile()
 
     int8_t rawData[magicNumber]; // stores all the data in a 1D byte array
     sprintf(rawData,"%s",CIMGheader); // adding the header
-    charVector2 width=int16ToChar2(data.width);
-    charVector2 height=int16ToChar2(data.height);
+    charVector2 width=int16ToChar2(data->width);
+    charVector2 height=int16ToChar2(data->height);
     rawData[8]=width.value[0]; // is there a more efficient way to do thiiiiiiiiiiiiiiiiiis
     rawData[9]=width.value[1];
     rawData[10]=height.value[0];
@@ -189,7 +189,7 @@ void encodeCIMGfile(PixelData data,int8_t* path) {
     
     
     for (uint32_t index=12; index<magicNumber; index+=4) { // oh boy
-        Color temp=data.pixels[index/4-3];
+        Color temp=data->pixels[index/4-3];
         rawData[index]=temp.r;
         rawData[index+1]=temp.g;
         rawData[index+2]=temp.b;

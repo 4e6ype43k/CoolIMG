@@ -41,7 +41,7 @@ IN THE SOFTWARE.
 // if clr.a is 0, then it just won't draw anything
 void drawPoint(PixelData* data, Color clr,uint16_t pos[2]) {
     if (clr.a>0){
-        data->pixels[posToIndex(*data,pos)]=mixColors(data->pixels[posToIndex(*data,pos)],clr); // wow
+        data->pixels[posToIndex(data,pos)]=mixColors(data->pixels[posToIndex(data,pos)],clr); // wow
     }
 }
 
@@ -59,7 +59,7 @@ void replaceColor(PixelData* data,Color clr0,Color clr1) {
     for (uint16_t x=0;x<data->width;x++) {
         for (uint16_t y=0;y<data->height;y++) {
             // HERE IT COMES!
-            if (data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].a==clr0.a){
+            if (data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].a==clr0.a){
                 drawPoint(data,clr1,(uint16_t[2]) {x,y});
             }
         }
@@ -91,7 +91,7 @@ void replaceColorArea(PixelData* data,Color clr0,Color clr1, uint16_t pos0[2], u
 
     for (uint16_t x=minX;x<=maxX;x++) {
         for (uint16_t y=minY;y<=maxY;y++) { // hope this works
-            if (data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(*data,(uint16_t[2]) {x,y})].a==clr0.a){
+            if (data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].r==clr0.r||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].g==clr0.g||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].b==clr0.b||data->pixels[posToIndex(data,(uint16_t[2]) {x,y})].a==clr0.a){
                 drawPoint(data,clr1,(uint16_t[2]) {x,y});
             }
         }
@@ -104,7 +104,7 @@ void replaceColorArea(PixelData* data,Color clr0,Color clr1, uint16_t pos0[2], u
 
 // inverts color at pos
 void invertPoint(PixelData* data, uint16_t pos[2]) {
-    Color clr=data->pixels[posToIndex(*data,pos)]; // storing the color for processing
+    Color clr=data->pixels[posToIndex(data,pos)]; // storing the color for processing
     Color newColor={255-clr.r,255-clr.g,255-clr.b,clr.a}; // 255-rgb is pretty much inverting the color
     //* a is the same cos... we dont invert alpha ok?
     drawPoint(data,newColor,pos);
@@ -203,7 +203,6 @@ void drawLine(PixelData* data,Color clr,uint16_t pos0[2],uint16_t pos1[2],uint16
 }
 
 // draws something but i cant really figure out what exactly
-// TODO add width
 void drawTriangleWireframe(PixelData* data,Color clr, uint16_t pos[3][2],uint16_t width) {
     drawLine(data,clr,pos[0],pos[1],width); // this is horrendously easy
     drawLine(data,clr,pos[1],pos[2],width);
@@ -281,7 +280,6 @@ void drawTriangleFilled(PixelData* data,Color clr,uint16_t pos[3][2]){
 }
 
 // draws a rect outline with given xywh
-// TODO you know what to add
 void drawRectWireframe(PixelData* data,Color clr,uint16_t x, uint16_t y, uint16_t w, uint16_t h,uint16_t width) {
     uint16_t pos0[]={x,y}; // first pos
     uint16_t pos1[]={x+w-1,y}; //? if w or h == data->w or h then ut will just be bigger than it by a pixel
@@ -305,30 +303,30 @@ void drawRectFilled(PixelData* data,Color clr,uint16_t x,uint16_t y,uint16_t w,u
 
 #pragma region SIZE_MANIPULATION
 
-// scales the dimensions of the struct by the scale factor (stretches pixels too) and returns new PD
-PixelData scaleBy(PixelData data, float scale[2]) {
-    PixelData newData={ceil(data.width*scale[0]),ceil(data.height*scale[1]),NULL};
+// scales the dimensions of the struct by the scale factor (stretches pixels too) and returns a new PD
+PixelData scaleBy(PixelData* data, float scale[2]) {
+    PixelData newData={ceil(data->width*scale[0]),ceil(data->height*scale[1]),NULL};
     allocPixelMemory(&newData);
     for (uint16_t x=0;x<newData.width;x++) { // goes over the width of the new struct
         uint16_t actualX=floor(x/scale[0]); // the x of the input PD
-        if (actualX>=data.width) actualX=data.width-1;
+        if (actualX>=data->width) actualX=data->width-1;
         for (uint16_t y=0;y<newData.height;y++) { // the height
             uint16_t actualY=floor(y/scale[1]); // same but for y
-            if (actualY>=data.height) actualY=data.height-1;
-            drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {actualX,actualY})],(uint16_t[2]) {x,y}); // theres no way this actually works
+            if (actualY>=data->height) actualY=data->height-1;
+            drawPoint(&newData,data->pixels[posToIndex(data,(uint16_t[2]) {actualX,actualY})],(uint16_t[2]) {x,y}); // theres no way this actually works
         }
     }
     return newData;
 }
 
 // same as scaleBy() but scales the PD to the dimensions given
-PixelData scaleTo(PixelData data, uint16_t dimensions[2]) {
-    float scale[2]={dimensions[0]/data.width,dimensions[1]/data.height}; // finding out the scale factor
+PixelData scaleTo(PixelData* data, uint16_t dimensions[2]) {
+    float scale[2]={dimensions[0]/data->width,dimensions[1]/data->height}; // finding out the scale factor
     return scaleBy(data,scale); // "yeah, i'll just make it a bit different"
 }
 
 // takes a chunk of the struct between two points and returns the pixel data of the area (if this makes any sense)
-PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
+PixelData cropImage(PixelData* data,uint16_t pos0[2],uint16_t pos1[2]) {
     uint16_t minX; // setting the range for the function to work on
     uint16_t maxX;
     uint16_t maxY;
@@ -357,7 +355,7 @@ PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
         uint16_t newX=x-minX; // the x of newData
         for (uint16_t y=minY;y<=maxY;y++) {
             uint16_t newY=y-minY;
-            drawPoint(&newData,data.pixels[posToIndex(data,(uint16_t[2]) {x,y})],(uint16_t[2]) {newX,newY}); // im so sorry to PUSH UR T3MPRR so much with this bad code
+            drawPoint(&newData,data->pixels[posToIndex(data,(uint16_t[2]) {x,y})],(uint16_t[2]) {newX,newY}); // im so sorry to PUSH UR T3MPRR so much with this bad code
         }                                                                                                    // i need to ACT RIGHT more often
     }                                                                                                        // this is probably because I MIGHT B3 SICK
     
@@ -365,15 +363,15 @@ PixelData cropImage(PixelData data,uint16_t pos0[2],uint16_t pos1[2]) {
 }
 
 // adds add pixels to base, starting from pos
-void fuseImages(PixelData* base, PixelData add, uint16_t pos[2]) {
-    uint16_t maxX=pos[0]+add.width; // the max x we will reach in the loop... a disintegration loop...
-    uint16_t maxY=pos[1]+add.height; // same but for y
+void fuseImages(PixelData* base, PixelData* add, uint16_t pos[2]) {
+    uint16_t maxX=pos[0]+add->width; // the max x we will reach in the loop... a disintegration loop...
+    uint16_t maxY=pos[1]+add->height; // same but for y
 
     for (uint16_t x=pos[0];x<maxX;x++) {
         uint16_t addX=x-pos[0]; // x of add
         for (uint16_t y=pos[1];y<maxY;y++) {
             // dont really need addY, cos it'll be used only once
-            drawPoint(base,add.pixels[posToIndex(add,(uint16_t[2]) {addX,y-pos[1]})],(uint16_t[2]) {x,y}); // hmmm, what should i reference now
+            drawPoint(base,add->pixels[posToIndex(add,(uint16_t[2]) {addX,y-pos[1]})],(uint16_t[2]) {x,y}); // hmmm, what should i reference now
         }
     }
 }
