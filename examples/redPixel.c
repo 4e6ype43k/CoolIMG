@@ -19,6 +19,6 @@ int main() {
     red.height=1;
     allocPixelMemory(&red);
     drawPoint(&red,RED,(uint16_t[2]) {0,0}); // on the canvas at red, draw a red pixel at (0,0)
-    encodeCIMGfile(red,"../images/red.cimg");
+    encodeCIMGfile(&red,"../images/red.cimg");
     freePixelMemory(&red);
 }

@@ -17,7 +17,7 @@ int main() {
     u162 pos2={4,0}; // again, origin point is (0,0), so max point will be (4,4)
 
     fill(&triangle,WHITE); // white bg
-    drawTriangleFilled(&triangle,BLUE,pos0,pos1,pos2); // filling a triangle with blue
-    encodeCIMGfile(triangle,"../images/triangle.cimg"); // time to store the data!
+    drawTriangleFilled(&triangle,BLUE,(u1632) {{0,4}, {4,4}, {4,0}}); // filling a triangle with blue
+    encodeCIMGfile(&triangle,"../images/triangle.cimg"); // time to store the data!
     freePixelMemory(&triangle); // be free my child
 } // dont forget -lm when compiling this!
