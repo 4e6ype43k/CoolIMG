@@ -11,6 +11,7 @@
 - **No dependencies** (expect, of course, the standard C library)
 - **Portable**
 - **Incredibly easy to use**
+- **The whole library is packaged in one header file, so no need for any linking nightmares!**
 - **Very cool!**
 
 ### What are the disadvantages?

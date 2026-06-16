@@ -3,9 +3,10 @@
 
 // expected output: blue triangle on white background
 
-#include "../src/CIMGcolor.h" // for easy access to colors
-#include "../src/CIMGmanipulation.h" // for drawing triangles
-#include "../src/CIMGconvenience.h" // for... well... convenience...
+#define MAIN_CIMG_FUNCTIONALITY
+#define CIMG_TYPES
+#define CIMG_MORE_COLOR_STUFF
+#include "../src/coolIMG.h"
 
 // all these headers are extensions to coolIMG.h, so it will be included too
 

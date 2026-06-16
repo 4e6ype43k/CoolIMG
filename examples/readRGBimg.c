@@ -1,8 +1,9 @@
 //! THIS IS NOT THE FILE YOU SHOULD INCLUDE
 //! THIS FILE IS FOR DEMONSTRATIONAL PURPOSES ONLY
 
+#define MAIN_CIMG_FUNCTIONALITY // for image IO
+#define CIMG_MORE_COLOR_STUFF // color functionality
 #include "../src/coolIMG.h"
-#include "../src/CIMGcolor.h"
 
 int main() {
     PixelData pd=decodeCIMGfile("../images/rgb.cimg");

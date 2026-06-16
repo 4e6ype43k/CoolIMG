@@ -1,8 +1,10 @@
 //! THIS IS NOT THE FILE YOU SHOULD INCLUDE
 //! THIS FILE IS FOR DEMONSTRATIONAL PURPOSES ONLY
 
-#include "../src/CIMGmanipulation.h"
-#include "../src/CIMGcolor.h"
+#define MAIN_CIMG_FUNCTIONALITY
+#define CIMG_MORE_COLOR_STUFF
+#define CIMG_MANIPULATION
+#include "../src/coolIMG.h"
 
 //* Expected output (hex):
 /*
