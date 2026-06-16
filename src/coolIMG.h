@@ -41,13 +41,18 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 #ifndef CIMG
 #define CIMG
 
+#ifndef NO_STDIO_H // for the people who don't want their code to be polluted by so much bloat (disables all functions that use printf!)
 #include <stdio.h>
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 
 #ifdef EVIL //! DONT
 #pragma GCC poison printf
 #endif
+
+// the following is borrowed from CIMGtoolkit.h
 
 typedef struct {
     char value[2];
@@ -74,7 +79,7 @@ int8_t readFileHeader(int8_t outputString[8],int8_t* path) {
     else return 1;
 }
 
-#ifdef MAIN_CIMG_FUNCTIONALITY
+#ifdef MAIN_CIMG_FUNCTIONALITY // this is the true CIMG functionality (PD, file IO)
 
 // regions are comparable to C++ (ugh) namespaces but regions are VS (Code) exclusive (i think?) and are only visual
 
@@ -206,7 +211,9 @@ void encodeCIMGfile(PixelData* data,int8_t* path) {
     uint32_t magicNumber=data->width*data->height*4+12;  // same as in decodeCIMGfile()
 
     int8_t rawData[magicNumber]; // stores all the data in a 1D byte array
-    sprintf(rawData,"%s",CIMGheader); // adding the header
+    for (int8_t x=0;x<8;x++) { // no sprintf() this time
+        rawData[x]=CIMGheader[x];
+    }
     charVector2 width=int16ToChar2(data->width);
     charVector2 height=int16ToChar2(data->height);
     rawData[8]=width.value[0]; // is there a more efficient way to do thiiiiiiiiiiiiiiiiiis
@@ -227,7 +234,7 @@ void encodeCIMGfile(PixelData* data,int8_t* path) {
     fclose(pFile); // hope this works
 }
 
-#ifdef CIMG_MORE_COLOR_STUFF
+#ifdef CIMG_MORE_COLOR_STUFF // colors
 
 #define BLANK (Color) {0,0,0,0}
 #define BLACK (Color) {0,0,0,255}
@@ -245,6 +252,7 @@ typedef enum COLOR_PRINT_TYPE {
     HEX
 } COLOR_PRINT_TYPE;
 
+#ifndef NO_STDIO_H
 // hm i wonder what this does
 void printColor(Color clr,COLOR_PRINT_TYPE printType) {
     if (!printType) {
@@ -253,6 +261,7 @@ void printColor(Color clr,COLOR_PRINT_TYPE printType) {
         printf("0x%x 0x%x 0x%x 0x%x",clr.r,clr.g,clr.b,clr.a);
     }
 }
+#endif
 
 // inverts clr rgb
 Color invertColor(Color clr){
@@ -505,7 +514,7 @@ uint8_t compareColors(Color clr1, Color clr2) {
 
 #endif
 
-#ifdef CIMG_MANIPULATION
+#ifdef CIMG_MANIPULATION // AKA CIMGmanipulation.h
 
 #include <math.h> // well thats a prob-lm
 
