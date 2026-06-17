@@ -41,10 +41,7 @@ header|size (wh order)|array of pixel colour data in human-readable, RGBA format
 #ifndef CIMG
 #define CIMG
 
-#ifndef NO_STDIO_H // for the people who don't want their code to be polluted by so much bloat (disables all functions that use printf!)
 #include <stdio.h>
-#endif
-
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -252,7 +249,6 @@ typedef enum COLOR_PRINT_TYPE {
     HEX
 } COLOR_PRINT_TYPE;
 
-#ifndef NO_STDIO_H
 // hm i wonder what this does
 void printColor(Color clr,COLOR_PRINT_TYPE printType) {
     if (!printType) {
@@ -261,7 +257,6 @@ void printColor(Color clr,COLOR_PRINT_TYPE printType) {
         printf("0x%x 0x%x 0x%x 0x%x",clr.r,clr.g,clr.b,clr.a);
     }
 }
-#endif
 
 // inverts clr rgb
 Color invertColor(Color clr){
