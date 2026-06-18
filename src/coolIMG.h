@@ -128,7 +128,7 @@ void allocPixelMemory(PixelData* data) {
 
 // frees memory after you're done with the pixel data
 void freePixelMemory(PixelData* data) {
-    free(data->pixels);
+    free(data->pixels); //? actually, you don't really need neither this function nor APM as you can just pass in a pointer to an array on the stack for faster memory
 }
 
 // converts a position on a PD and returns an index matching the pos
