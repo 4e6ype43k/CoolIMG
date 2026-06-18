@@ -72,13 +72,11 @@ charVector2 int16ToChar2(uint16_t input) { // my most genius idea yet
 int8_t readFileHeader(int8_t outputString[8],int8_t* path) {
     FILE* pFile;
     pFile=fopen(path,"r");
-    if (pFile) {fread(outputString,1,8,pFile); return 0;} // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
-    else return 1;
+    if (pFile) {fread(outputString,1,8,pFile);fclose(pFile); return 0;} // reads data from pointer to the file in 8 chunks of size of 8 bits and writing the result to the input string
+    else {fclose(pFile);return 1;}
 }
 
 #ifdef MAIN_CIMG_FUNCTIONALITY // this is the true CIMG functionality (PD, file IO)
-
-// regions are comparable to C++ (ugh) namespaces but regions are VS (Code) exclusive (i think?) and are only visual
 
 typedef struct Color {
     uint8_t r;
@@ -196,8 +194,35 @@ PixelData decodeCIMGfile(int8_t* path) {
         for (uint32_t x=0; x<magicNumber-12; x+=4) {
             data.pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]}; // x is the red value, x+1 is green and etc
         }
-
+        fclose(pFile);
         return data;
+    } else return (PixelData) {0,0,NULL};
+}
+
+// decodes CIMG file into a struct...
+void decodeCIMGfileIntoStruct(int8_t* path,PixelData* data) {
+    uint8_t cimgCheck=isCIMG(path);
+    if (cimgCheck==1) {
+        FILE* pFile;
+        pFile=fopen(path,"rb");
+        uint16_t sizeData[6];
+        fread(sizeData,2,6,pFile);
+
+        uint16_t width=sizeData[4]/256;
+        width+=(sizeData[4]-width*256)*256;
+        uint16_t height=sizeData[5]/256;
+        height+=(sizeData[5]-height*256)*256;
+        
+        allocPixelMemory(data);
+        uint32_t magicNumber=width*height*4+12;
+
+        uint8_t fileData[magicNumber];
+        fread(fileData,1,magicNumber,pFile);
+
+        for (uint32_t x=0; x<magicNumber-12; x+=4) {
+            data->pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]};
+        }
+        fclose(pFile);
     } else return (PixelData) {0,0,NULL};
 }
 
