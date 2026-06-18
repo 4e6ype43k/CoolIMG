@@ -277,9 +277,9 @@ typedef enum COLOR_PRINT_TYPE {
 // hm i wonder what this does
 void printColor(Color clr,COLOR_PRINT_TYPE printType) {
     if (!printType) {
-        printf("%d,%d,%d,%d",clr.r,clr.g,clr.b,clr.a);
+        printf("%03d,%03d,%03d,%03d",clr.r,clr.g,clr.b,clr.a);
     } else {
-        printf("0x%x 0x%x 0x%x 0x%x",clr.r,clr.g,clr.b,clr.a);
+        printf("0x%02x%02x%02x%02x",clr.r,clr.g,clr.b,clr.a);
     }
 }
 
