@@ -223,7 +223,7 @@ void decodeCIMGfileIntoStruct(int8_t* path,PixelData* data) {
             data->pixels[x/4]=(Color){fileData[x],fileData[x+1],fileData[x+2],fileData[x+3]};
         }
         fclose(pFile);
-    } else return (PixelData) {0,0,NULL};
+    }
 }
 
 // encodes pixel data into a CIMG file
